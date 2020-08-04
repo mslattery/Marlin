@@ -39,26 +39,36 @@
 #define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
 #define ENCODER_WAIT    20
 
+#ifndef MACHINE_SIZE
+  #define MACHINE_SIZE "220x220x250"
+#endif
+#ifndef CORP_WEBSITE_C
+  #define CORP_WEBSITE_C "www.cxsw3d.com"
+#endif
+#ifndef CORP_WEBSITE_E
+  #define CORP_WEBSITE_E "www.creality.com"
+#endif
+
 // Initialize Values
 HMI_Flag HMI_flag{0};
 millis_t dwin_heat_time = 0;
 float zprobe_zoffset    = 0;
-millis_t Encoder_ms     = 0;
+millis_t Encoder_ms     = 0; // Encoder related timing
+int currentScreenIndex = 0, lastScreenIndex = 0; // Used to store location in menu tree
 
 /*
 constexpr uint16_t TROWS = 6, MROWS = TROWS - 1,        // Total rows, and other-than-Back
                    TITLE_HEIGHT = 30,                   // Title bar height. SLATS - I moved to LAYOUT_TITLE_BAR_HEIGHT
-                   MLINE = 53,                          // Menu line height
-                   LBLX = 60,                           // Menu item label X
                    MENU_CHR_W = 8, STAT_CHR_W = 10;
 */
-constexpr uint16_t STAT_CHR_W = 10; // TODO: This is used in layout need to understand, STATIC CHAR WIDTH!
+constexpr uint16_t MLINE = 53,                          // Menu line height
+                   LBLX = 60,                           // Menu item label X
+                   MENU_CHR_W = 8,                      // Menu Char Width
+                   STAT_CHR_W = 10;                     // TODO: This is used in layout need to understand, STATIC CHAR WIDTH!
+
+#define MBASE(L) (49 + (L)*MLINE)
 
 void HMI_Init(void) { }
-
-void EachMomentUpdate(void) {
-  DWIN_UpdateLCD();
-}
 
 inline ENCODER_DiffState get_encoder_state() {
   const millis_t ms = millis();
@@ -68,35 +78,7 @@ inline ENCODER_DiffState get_encoder_state() {
   return state;
 }
 
-void HMI_MainMenu(void) {
-  ENCODER_DiffState encoder_diffState = get_encoder_state();
-  if (encoder_diffState == ENCODER_DIFF_NO) return;
-
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, DWIN_LCD_COORD_RIGHTMOST_X, 250);
-
-  if (encoder_diffState == ENCODER_DIFF_CW) {
-    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, (char*)"ROTARY CW");
-  }  
-  else if (encoder_diffState == ENCODER_DIFF_CCW) {  
-    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, (char*)"ROTARYCCW");
-  }
-  else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
-    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, (char*)"ROTARYENT");
-  }
-  DWIN_UpdateLCD();
-}
-
-void DWIN_Update(void) {
-  //EachMomentUpdate();   // Status update
-  //HMI_SDCardUpdate();   // SD card update
-  //DWIN_HandleScreen();  // Rotary encoder update
-  HMI_MainMenu();
-}
-
-void DWIN_CompletedHoming() { }
-
-void Popup_Window_Temperature(const bool toohigh) { }
-
+// Clear Region
 inline void Clear_Menu_Area(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_TOPLEFT_X,  LAYOUT_TITLE_BAR_HEIGHT+1, DWIN_WIDTH,  DWIN_HEIGHT - 120); // TODO: Original Lower Left was 272,360, the DWIN goes to 272,480.  Thinking these last 120 rows are reserved, to review.
 }
@@ -104,6 +86,170 @@ inline void Clear_Menu_Area(void) {
 inline void Clear_Title_Bar(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_WIDTH,  LAYOUT_TITLE_BAR_HEIGHT);
 }
+
+inline void Clear_Main_Window(void) {
+  Clear_Title_Bar();
+  Clear_Menu_Area();
+}
+// End Clear Region
+
+inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
+  DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
+}
+
+
+inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
+  if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
+  if (icon) Draw_Menu_Icon(line, icon);
+  DWIN_Draw_Line(DWIN_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
+}
+
+// The "Back" label is always on the first line
+inline void Draw_Back_Label(void) {
+  if (HMI_flag.language_flag)
+    DWIN_Frame_AreaCopy(1, 129, 72, 271 - 115, 479 - 395, LBLX, MBASE(0));
+  else
+    DWIN_Frame_AreaCopy(1, 226, 179, 271 - 15, 479 - 290, LBLX, MBASE(0));
+}
+
+inline void Draw_Menu_Cursor(const uint8_t line) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
+}
+
+// Draw "Back" line at the top
+inline void MenuItem_Draw_Back(const bool is_sel=true) {
+  Draw_Menu_Line(0, ICON_Back);
+  Draw_Back_Label();
+  if (is_sel) Draw_Menu_Cursor(0);
+}
+
+void HMI_MainMenu(void) {
+  ENCODER_DiffState encoder_diffState = get_encoder_state();
+  if (encoder_diffState == ENCODER_DIFF_NO) return;
+
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, DWIN_LCD_COORD_RIGHTMOST_X, 250); // Clear the text first
+
+  if (encoder_diffState == ENCODER_DIFF_CW) {
+    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CW");
+  }  
+  else if (encoder_diffState == ENCODER_DIFF_CCW) {  
+    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CCW");
+  }
+  else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
+    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY ENTER");
+    currentScreenIndex = InfoScreen;
+  }
+  DWIN_UpdateLCD();
+}
+
+inline void Draw_Title(const __FlashStringHelper * title) {
+  DWIN_Draw_String(false, false, HEADER_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLUE, 14, 4, (char*)title);
+}
+
+inline void Draw_Info_Menu() {
+  Clear_Main_Window();
+  Draw_Title(GET_TEXT_F(MSG_INFO_SCREEN));
+
+  MenuItem_Draw_Back();
+
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / 2, 122, (char*)MACHINE_SIZE);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / 2, 195, (char*)SHORT_BUILD_VERSION);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / 2, 268, (char*)CORP_WEBSITE_C);
+
+  LOOP_L_N(i, 3) {
+    DWIN_ICON_Show(ICON, ICON_PrintSize + i, 26, 99 + i * 73);
+    DWIN_Draw_Line(DWIN_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
+  }
+}
+
+void Goto_MainMenu(void) {
+  currentScreenIndex = MainMenuScreen;
+  Clear_Main_Window();
+  if (HMI_flag.language_flag) {
+    DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"
+  }
+  else {
+    Draw_Title(GET_TEXT_F(MSG_MAIN));
+  }
+  DWIN_ICON_Show(ICON, ICON_LOGO, 71, 52);
+  //ICON_Print();
+  //ICON_Prepare();
+  //ICON_Control();
+  //TERN(HAS_LEVELING, ICON_Leveling, ICON_StartInfo)(select_page.now == 3);
+}
+
+/* Info */
+void HMI_Info(void) {
+  ENCODER_DiffState encoder_diffState = get_encoder_state();
+  if (encoder_diffState == ENCODER_DIFF_NO) return;
+  if (encoder_diffState == ENCODER_DIFF_ENTER) {
+    Goto_MainMenu();
+  } else {
+    Draw_Info_Menu();
+  }
+  DWIN_UpdateLCD();
+}
+
+
+void EachMomentUpdate(void) { // TODO: See if this is needed, per the DWIN_Update comment it might be just general status updates
+  DWIN_UpdateLCD();
+}
+
+void DWIN_HandleScreen(void) {
+  switch (currentScreenIndex) {
+    case MainMenuScreen:              HMI_MainMenu(); break;
+    case InfoScreen:                  HMI_Info(); break;
+    /*
+    case SelectFile:            HMI_SelectFile(); break;
+    case Prepare:               HMI_Prepare(); break;
+    case Control:               HMI_Control(); break;
+    case Leveling:              break;
+    case PrintProcess:          HMI_Printing(); break;
+    case Print_window:          HMI_PauseOrStop(); break;
+    case AxisMove:              HMI_AxisMove(); break;
+    case TemperatureID:         HMI_Temperature(); break;
+    case Motion:                HMI_Motion(); break;
+    case Tune:                  HMI_Tune(); break;
+    case PLAPreheat:            HMI_PLAPreheatSetting(); break;
+    case ABSPreheat:            HMI_ABSPreheatSetting(); break;
+    case MaxSpeed:              HMI_MaxSpeed(); break;
+    case MaxAcceleration:       HMI_MaxAcceleration(); break;
+    case MaxCorner:             HMI_MaxCorner(); break;
+    case Step:                  HMI_Step(); break;
+    case Move_X:                HMI_Move_X(); break;
+    case Move_Y:                HMI_Move_Y(); break;
+    case Move_Z:                HMI_Move_Z(); break;
+    case Extruder:              HMI_Move_E(); break;
+    case Homeoffset:            HMI_Zoffset(); break;
+    #if HAS_HOTEND
+      case ETemp:               HMI_ETemp(); break;
+    #endif
+    #if HAS_HEATED_BED
+      case BedTemp:             HMI_BedTemp(); break;
+    #endif
+    #if HAS_FAN
+      case FanSpeed:            HMI_FanSpeed(); break;
+    #endif
+    case PrintSpeed:            HMI_PrintSpeed(); break;
+    case MaxSpeed_value:        HMI_MaxFeedspeedXYZE(); break;
+    case MaxAcceleration_value: HMI_MaxAccelerationXYZE(); break;
+    case MaxCorner_value:       HMI_MaxCornerXYZE(); break;
+    case Step_value:            HMI_StepXYZE(); break;
+    */
+    default: break;
+  }
+}
+
+// Main UI Loop
+void DWIN_Update(void) {
+  //EachMomentUpdate();   // Status update
+  //HMI_SDCardUpdate();   // SD card update
+  DWIN_HandleScreen();  // Handle current screen state
+}
+
+void DWIN_CompletedHoming() { }
+
+void Popup_Window_Temperature(const bool toohigh) { }
 
 void MarlinUI::clear_lcd() {
   //DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_Background_black, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_Y, DWIN_LCD_COORD_BOTTOMRIGHT_X,  DWIN_LCD_COORD_BOTTOMRIGHT_Y);
@@ -152,15 +298,9 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
   // show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178, 429, BABY_Z_VAR * 100); // TODO: implement that show_plus_or_minus
 }
 
-inline void Clear_Main_Window(void) {
-  //Clear_Title_Bar();
-  Clear_Menu_Area();
-}
-
-
 /* Start of UI Loop */
 void HMI_StartFrame(const bool with_update) {
-  //  MarlinUI::clear_lcd();
+
   Clear_Main_Window();
 
   // Draw backgrounds

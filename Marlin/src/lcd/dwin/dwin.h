@@ -47,42 +47,9 @@
 
 #include "../../MarlinCore.h" // for millis_t
 #include "rotary_encoder.h"
-
-// Color - TODO: See if color definitions exist elsewhere in the Marlin ecosystem
-// https://demmel.com/ilcd/help/16BitColorValues.htm
-#define DWIN_COLOR_WHITE             0xFFFF
-#define DWIN_COLOR_MAGENTA           0xF81F
-#define DWIN_COLOR_BLUE              0x001F
-#define DWIN_COLOR_GREEN             0x07E0
-#define DWIN_COLOR_BACKGROUND_WINDOW 0x31E8  // Popup background color
-#define DWIN_COLOR_BACKGROUND_BLUE   0x1125  // Dark blue background color
-#define DWIN_COLOR_BACKGROUND_BLACK  0x0841  // black background color
-#define DWIN_COLOR_FONT_WINDOW       0xD6BA  // Popup font background color
-#define DWIN_COLOR_LINE              0x3A6A  // Split line color
-#define DWIN_COLOR_RECTANGLE         0xEE2F  // blue square cursor color
-#define DWIN_COLOR_PERCENT           0xFE29  // percentage color
-#define DWIN_COLOR_BARFILL           0x10E4  // fill color of progress bar
-#define DWIN_COLOR_SELECT            0x33BB  // selected color
-
-/** FONTS
- * 3-.0：The font size, 0x00-0x09, corresponds to the font size below:
- * 0x00=6*12   0x01=8*16   0x02=10*20  0x03=12*24  0x04=14*28
- * 0x05=16*32  0x06=20*40  0x07=24*48  0x08=28*56  0x09=32*64
- */
-#define font6x12  0x00
-#define font8x16  0x01
-#define font10x20 0x02
-#define font12x24 0x03
-#define font14x28 0x04
-#define font16x32 0x05
-#define font20x40 0x06
-#define font24x48 0x07
-#define font28x56 0x08
-#define font32x64 0x09
-
-#define MENU_FONT   font8x16
-#define STAT_FONT   font10x20
-#define HEADER_FONT font10x20
+#include "dwin_icons.h"
+#include "dwin_colors.h"
+#include "dwin_fonts.h"
 
 /* Screen Layout
 
@@ -198,6 +165,60 @@ typedef struct {
   char step_flag;
 } HMI_Flag;
 extern HMI_Flag    HMI_flag;
+
+enum ScreenIDs { // Screen IDs for moving around menu
+  MainMenuScreen,
+  SelectFile,
+  Prepare,
+  Control,
+  Leveling,
+  PrintProcess,
+  AxisMove,
+  TemperatureID,
+  Motion,
+  InfoScreen,
+  Tune,
+  #if HAS_HOTEND
+    PLAPreheat,
+    ABSPreheat,
+  #endif
+  MaxSpeed,
+  MaxSpeed_value,
+  MaxAcceleration,
+  MaxAcceleration_value,
+  MaxCorner,
+  MaxCorner_value,
+  Step,
+  Step_value,
+
+  // Last Process ID
+  Last_Prepare,
+
+  // Back Process ID
+  Back_Main,
+  Back_Print,
+
+  // Date variable ID
+  Move_X,
+  Move_Y,
+  Move_Z,
+  Extruder,
+  Homeoffset,
+  #if HAS_HOTEND
+    ETemp,
+  #endif
+  #if HAS_HEATED_BED
+    BedTemp,
+  #endif
+  #if HAS_FAN
+    FanSpeed,
+  #endif
+  PrintSpeed,
+
+  // Window ID
+  Print_window,
+  Popup_Window
+};
 
 #if HAS_HOTEND
   void Popup_Window_Temperature(const bool toohigh);
