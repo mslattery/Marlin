@@ -29,6 +29,7 @@
  *
  * LCD display implementations for DWIN by Creality3D.
  * This is the display on the Creality3d Ender 3 V2.
+ * http://www.ampdisplay.com/documents/pdf/DWIN%20DGUS%20DEV%20GUIDE_V40_2014.pdf
  * 
  *               |\__-----__/|
             _____/::::::  :::\_____
@@ -47,6 +48,7 @@
 #include "../../MarlinCore.h" // for millis_t
 
 // Color - TODO: See if color definitions exist elsewhere in the Marlin ecosystem
+// https://demmel.com/ilcd/help/16BitColorValues.htm
 #define DWIN_COLOR_WHITE             0xFFFF
 #define DWIN_COLOR_MAGENTA           0xF81F
 #define DWIN_COLOR_BACKGROUND_WINDOW 0x31E8  // Popup background color

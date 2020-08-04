@@ -97,11 +97,11 @@ void MarlinUI::clear_lcd() {
 #endif
 
 inline void Draw_Title_Bar_Background(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_WIDTH,  LAYOUT_TITLE_BAR_HEIGHT);
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_RIGHTMOST_X,  LAYOUT_TITLE_BAR_HEIGHT);
 }
 
 inline void Draw_Indicator_Frame_Background(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_MAGENTA, 0,  DWIN_HEIGHT - 120,  DWIN_WIDTH - 1, DWIN_HEIGHT-1); // Draw Indicator Frame, TODO: 120 pixels reserved
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
 }
 
 inline void Draw_Indicator_Temperature_Hotend(void) { // TODO: Work the locations into parameters
@@ -142,7 +142,7 @@ void HMI_StartFrame(const bool with_update) {
 
   // Test Items
   DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, DWIN_WIDTH/2, DWIN_HEIGHT/2, (char*)"Text Here");
-  DWIN_Draw_Line(DWIN_COLOR_LINE_COLOR, 0, 100, DWIN_WIDTH-1, 100);
+  DWIN_Draw_Line(DWIN_COLOR_LINE_COLOR, 0, 100, DWIN_LCD_COORD_RIGHTMOST_X, 100);
 
 /* -- TODO: Draw Icons
   DWIN_ICON_Show(ICON, ICON_HotendTemp, 13, 381);
