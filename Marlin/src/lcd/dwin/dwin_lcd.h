@@ -42,6 +42,21 @@
 #define DWIN_WIDTH  272
 #define DWIN_HEIGHT 480
 
+// Coordinate System
+#define DWIN_LCD_COORD_TOPLEFT_X 0
+#define DWIN_LCD_COORD_TOPLEFT_Y 0
+#define DWIN_LCD_COORD_TOPRIGHT_X DWIN_WIDTH-1
+#define DWIN_LCD_COORD_TOPRIGHT_Y 0
+#define DWIN_LCD_COORD_BOTTOMLEFT_X 0
+#define DWIN_LCD_COORD_BOTTOMLEFT_Y DWIN_HEIGHT-1
+#define DWIN_LCD_COORD_BOTTOMRIGHT_X DWIN_WIDTH-1
+#define DWIN_LCD_COORD_BOTTOMRIGHT_Y DWIN_HEIGHT-1
+
+// Draw Modes (currently based on rectangle)
+#define DWIN_DRAW_MODE_FRAME    0
+#define DWIN_DRAW_MODE_FILL     1
+#define DWIN_DRAW_MODE_XORFILL  2
+
 /*接收数据解析 返回值:true,接收到数据;false,未接收到数据*/
 bool DWIN_ReceiveAnalyze(void);
 
