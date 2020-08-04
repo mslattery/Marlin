@@ -51,15 +51,17 @@
 // https://demmel.com/ilcd/help/16BitColorValues.htm
 #define DWIN_COLOR_WHITE             0xFFFF
 #define DWIN_COLOR_MAGENTA           0xF81F
+#define DWIN_COLOR_BLUE              0x001F
+#define DWIN_COLOR_GREEN             0x07E0
 #define DWIN_COLOR_BACKGROUND_WINDOW 0x31E8  // Popup background color
 #define DWIN_COLOR_BACKGROUND_BLUE   0x1125  // Dark blue background color
 #define DWIN_COLOR_BACKGROUND_BLACK  0x0841  // black background color
 #define DWIN_COLOR_FONT_WINDOW       0xD6BA  // Popup font background color
-#define DWIN_COLOR_LINE_COLOR        0x3A6A  // Split line color
-#define DWIN_COLOR_RECTANGLE_COLOR   0xEE2F  // blue square cursor color
-#define DWIN_COLOR_PERCENT_COLOR     0xFE29  // percentage color
-#define DWIN_COLOR_BARFILL_COLOR     0x10E4  // fill color of progress bar
-#define DWIN_COLOR_SELECT_COLOR      0x33BB  // selected color
+#define DWIN_COLOR_LINE              0x3A6A  // Split line color
+#define DWIN_COLOR_RECTANGLE         0xEE2F  // blue square cursor color
+#define DWIN_COLOR_PERCENT           0xFE29  // percentage color
+#define DWIN_COLOR_BARFILL           0x10E4  // fill color of progress bar
+#define DWIN_COLOR_SELECT            0x33BB  // selected color
 
 /** FONTS
  * 3-.0：The font size, 0x00-0x09, corresponds to the font size below:

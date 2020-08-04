@@ -106,11 +106,13 @@ inline void Draw_Indicator_Frame_Background(void) {
 
 inline void Draw_Indicator_Temperature_Hotend(void) { // TODO: Work the locations into parameters
   DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 33, 382, thermalManager.temp_hotend[0].celsius);
+  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
   DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_hotend[0].target);  
 }
 
 inline void Draw_Indicator_Temperature_Bed(void) { // TODO: Work the locations into parameters
   DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 178, 382, thermalManager.temp_bed.celsius);
+  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
   DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_bed.target);
 }
 
@@ -121,8 +123,6 @@ inline void Draw_Indicator_Feedrate(void) { // TODO: Work the locations into par
 
 inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into parameters
   // show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178, 429, BABY_Z_VAR * 100); // TODO: implement that show_plus_or_minus
-  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
 }
 
 inline void Clear_Main_Window(void) {
@@ -141,8 +141,14 @@ void HMI_StartFrame(const bool with_update) {
   Draw_Indicator_Frame_Background();
 
   // Test Items
-  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, DWIN_WIDTH/2, DWIN_HEIGHT/2, (char*)"Text Here");
-  DWIN_Draw_Line(DWIN_COLOR_LINE_COLOR, 0, 100, DWIN_LCD_COORD_RIGHTMOST_X, 100);
+  //DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, DWIN_WIDTH/2, DWIN_HEIGHT/2, (char*)"Text Here");
+  //DWIN_Draw_Line(DWIN_COLOR_LINE_COLOR, 0, 100, DWIN_LCD_COORD_RIGHTMOST_X, 100);
+
+// Draw indicators
+  Draw_Indicator_Temperature_Hotend();
+  Draw_Indicator_Temperature_Bed();
+  Draw_Indicator_Feedrate();
+  Draw_Indicator_ZOffset();
 
 /* -- TODO: Draw Icons
   DWIN_ICON_Show(ICON, ICON_HotendTemp, 13, 381);
@@ -153,7 +159,7 @@ void HMI_StartFrame(const bool with_update) {
   DWIN_ICON_Show(ICON, ICON_Speed,      13, 429);
   DWIN_ICON_Show(ICON, ICON_Zoffset,   158, 428);
 */
- 
+
   if (with_update) {
     DWIN_UpdateLCD();
     delay(5);
