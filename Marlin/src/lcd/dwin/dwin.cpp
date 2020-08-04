@@ -36,14 +36,14 @@
 #include "../../module/temperature.h" // For thermalManager
 #include "../../module/motion.h" // For feedrate_percentage
 
+#define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
+#define ENCODER_WAIT    20
+
 // Initialize Values
 HMI_Flag HMI_flag{0};
 millis_t dwin_heat_time = 0;
-float zprobe_zoffset = 0;
-
-uint16_t testCount = 0;
-
-#define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
+float zprobe_zoffset    = 0;
+millis_t Encoder_ms     = 0;
 
 /*
 constexpr uint16_t TROWS = 6, MROWS = TROWS - 1,        // Total rows, and other-than-Back
@@ -52,7 +52,7 @@ constexpr uint16_t TROWS = 6, MROWS = TROWS - 1,        // Total rows, and other
                    LBLX = 60,                           // Menu item label X
                    MENU_CHR_W = 8, STAT_CHR_W = 10;
 */
-constexpr uint16_t STAT_CHR_W = 10; // TODO: This is used in layout need to understand, comes from the old static ints above
+constexpr uint16_t STAT_CHR_W = 10; // TODO: This is used in layout need to understand, STATIC CHAR WIDTH!
 
 void HMI_Init(void) { }
 
@@ -60,10 +60,37 @@ void EachMomentUpdate(void) {
   DWIN_UpdateLCD();
 }
 
+inline ENCODER_DiffState get_encoder_state() {
+  const millis_t ms = millis();
+  if (PENDING(ms, Encoder_ms)) return ENCODER_DIFF_NO;
+  const ENCODER_DiffState state = Encoder_ReceiveAnalyze();
+  if (state != ENCODER_DIFF_NO) Encoder_ms = ms + ENCODER_WAIT;
+  return state;
+}
+
+void HMI_MainMenu(void) {
+  ENCODER_DiffState encoder_diffState = get_encoder_state();
+  if (encoder_diffState == ENCODER_DIFF_NO) return;
+
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, DWIN_LCD_COORD_RIGHTMOST_X, 250);
+
+  if (encoder_diffState == ENCODER_DIFF_CW) {
+    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, (char*)"ROTARY CW");
+  }  
+  else if (encoder_diffState == ENCODER_DIFF_CCW) {  
+    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, (char*)"ROTARYCCW");
+  }
+  else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
+    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 130, 200, (char*)"ROTARYENT");
+  }
+  DWIN_UpdateLCD();
+}
+
 void DWIN_Update(void) {
-  EachMomentUpdate();   // Status update
+  //EachMomentUpdate();   // Status update
   //HMI_SDCardUpdate();   // SD card update
   //DWIN_HandleScreen();  // Rotary encoder update
+  HMI_MainMenu();
 }
 
 void DWIN_CompletedHoming() { }

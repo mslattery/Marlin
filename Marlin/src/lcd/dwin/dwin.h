@@ -46,6 +46,7 @@
  */
 
 #include "../../MarlinCore.h" // for millis_t
+#include "rotary_encoder.h"
 
 // Color - TODO: See if color definitions exist elsewhere in the Marlin ecosystem
 // https://demmel.com/ilcd/help/16BitColorValues.htm
