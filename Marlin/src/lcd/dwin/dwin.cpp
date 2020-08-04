@@ -79,24 +79,33 @@ inline ENCODER_DiffState get_encoder_state() {
 }
 
 // Clear Region
-inline void Clear_Menu_Area(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT+1, DWIN_WIDTH,  DWIN_HEIGHT - 120); // TODO: Original Lower Left was 272,360, the DWIN goes to 272,480.  Thinking these last 120 rows are reserved, to review.
+inline void Draw_Test() {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_GREEN, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_X, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_Y, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_X, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y);
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_MAGENTA, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y);
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BLUE, DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_X, DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_Y, DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_Y);
 }
 
-inline void Clear_Title_Bar(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_WIDTH,  DWIN_LAYOUT_TITLE_BAR_HEIGHT);
+inline void Draw_TitleBar_Background(void) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_X, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_Y, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_X, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y);
 }
+
+inline void Draw_DynamicArea_Background(void) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y);
+}
+
+//inline void Clear_Menu_Area(void) {
+//  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT+1, DWIN_WIDTH,  DWIN_HEIGHT - 120); // TODO: Original Lower Left was 272,360, the DWIN goes to 272,480.  Thinking these last 120 rows are reserved, to review.
+//}
 
 inline void Clear_Main_Window(void) {
-  Clear_Title_Bar();
-  Clear_Menu_Area();
+  Draw_TitleBar_Background();
+  Draw_DynamicArea_Background();
 }
 // End Clear Region
 
 inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
   DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
 }
-
 
 inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
   if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
@@ -142,19 +151,13 @@ void HMI_MainMenu(void) {
   DWIN_UpdateLCD();
 }
 
-inline void Draw_Title(const __FlashStringHelper * title) {
+inline void Draw_Title_Text(const __FlashStringHelper * title) {
   DWIN_Draw_String(false, false, HEADER_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLUE, 14, 4, (char*)title);
-}
-
-inline void Draw_Test() {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_GREEN, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_X, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_Y, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_X, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y);
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_MAGENTA, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y);
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BLUE, DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_X, DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_Y, DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_Y);
 }
 
 inline void Draw_Info_Menu() {
   Clear_Main_Window();
-  Draw_Title(GET_TEXT_F(MSG_INFO_SCREEN));
+  Draw_Title_Text(GET_TEXT_F(MSG_INFO_SCREEN));
 
   MenuItem_Draw_Back();
 
@@ -168,14 +171,14 @@ inline void Draw_Info_Menu() {
   }
 }
 
-void Goto_MainMenu(void) {
+void Draw_MainMenu(void) {
   currentScreenIndex = MainMenuScreen;
   Clear_Main_Window();
   if (HMI_flag.language_flag) {
     DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"
   }
   else {
-    Draw_Title(GET_TEXT_F(MSG_MAIN));
+    Draw_Title_Text(GET_TEXT_F(MSG_MAIN));
   }
   DWIN_ICON_Show(ICON, ICON_LOGO, 71, 52);
   //ICON_Print();
@@ -184,23 +187,16 @@ void Goto_MainMenu(void) {
   //TERN(HAS_LEVELING, ICON_Leveling, ICON_StartInfo)(select_page.now == 3);
 }
 
-/* Info */
+/* Info Screen */
 void HMI_Info(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
   if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    Goto_MainMenu();
+    Draw_MainMenu();
   } else {
-    //Draw_Info_Menu();
-
-    Draw_Test();
-
+    Draw_Info_Menu();
+    //Draw_Test();
   }
-  DWIN_UpdateLCD();
-}
-
-
-void EachMomentUpdate(void) { // TODO: See if this is needed, per the DWIN_Update comment it might be just general status updates
   DWIN_UpdateLCD();
 }
 
@@ -251,7 +247,6 @@ void DWIN_HandleScreen(void) {
 
 // Main UI Loop
 void DWIN_Update(void) {
-  //EachMomentUpdate();   // Status update
   //HMI_SDCardUpdate();   // SD card update
   DWIN_HandleScreen();  // Handle current screen state
 }
@@ -309,7 +304,6 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
 
 /* Start of UI Loop */
 void HMI_StartFrame(const bool with_update) {
-
   Clear_Main_Window();
 
   // Draw backgrounds
