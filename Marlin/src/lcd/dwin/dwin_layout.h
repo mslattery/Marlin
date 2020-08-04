@@ -1,0 +1,158 @@
+/**
+ * Marlin 3D Printer Firmware
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+#ifndef DWIN_LAYOUT_H // Guard against circular references
+#define DWIN_LAYOUT_H
+
+#pragma once
+
+/**
+ * dwin_layout.h
+ *
+ * DWIN Layout
+ * 
+ *               |\__-----__/|
+            _____/::::::  :::\_____
+           '__--(:::::::::..::)--__`
+           /  _- \/: :::::::\/ -_  \
+             /   /::.   .::::\   \
+                |:::::::::::::|
+               _|/:::::____::\|_
+             /::/:::::/:_::\::\:.\
+            |::|  ..:(_/ \::|::|::|
+            |::|:::::. ::|: |::|.:|
+             \:|::  :::_/::/: :|:/
+           ((___\____\____/___/___)) - Slats
+ */
+
+#include "dwin_lcd.h"
+
+/* Layout
+===============================================================================
+Coordinate System
+===============================================================================
+DWIN display is 272W x 480H in portrait orientation with 0,0 (X,Y) in the
+upper left corner and 271,479 (X,Y) in lower right corner (see below).
+
+===============================================================================
+Overall Layout
+===============================================================================
+Generally...
+
+- The layout is a title bar with contrasting background with the page title 
+  text presented.
+
+- A dynamic area below can be used for all other aspects such as indicators,
+  menu items, etc.
+
+0,0   |-------------------------------------------------| 271,0
+      | Title Bar                                       |         (30 rows)
+0,29  |-------------------------------------------------| 271,29
+0,30  |                                                 | 271,30
+      |                                                 |
+      | Dynamic Area                                    |         (329 rows)
+      |                                                 |
+      |                                                 |
+0,359 |-------------------------------------------------| 271,359
+0,360 |                                                 | 271,360
+      | Static Indicators                               |         (120 rows)
+      |                                                 |
+0,479 |-------------------------------------------------| 271,479
+*/
+
+// Title bar
+#define DWIN_LAYOUT_TITLE_BAR_HEIGHT 30 // Y values of 0 - 29
+#define DWIN_LAYOUT_TITLE_BAR_TOPLEFT_X DWIN_LCD_COORD_LEFTMOST_X
+#define DWIN_LAYOUT_TITLE_BAR_TOPLEFT_Y DWIN_LCD_COORD_TOPLEFT_Y
+#define DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_X DWIN_LCD_COORD_RIGHTMOST_X
+#define DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y (DWIN_LCD_COORD_TOPRIGHT_Y + DWIN_LAYOUT_TITLE_BAR_HEIGHT - 1)
+
+// Dynamic Area
+#define DWIN_LAYOUT_DYNAMIC_AREA_HEIGHT 329 // Y values of 30 - 359
+#define DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X DWIN_LCD_COORD_LEFTMOST_X
+#define DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y (DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y + 1)
+#define DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X DWIN_LCD_COORD_RIGHTMOST_X
+#define DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y DWIN_LCD_COORD_BOTTOMRIGHT_Y
+// Indicator Area
+#define DWIN_LAYOUT_INDICATOR_HEIGHT 120  // Y values of 360 - 479
+#define DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_X DWIN_LCD_COORD_LEFTMOST_X
+#define DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_Y (DWIN_HEIGHT - DWIN_LAYOUT_INDICATOR_HEIGHT - 1)
+#define DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_X DWIN_LCD_COORD_RIGHTMOST_X
+#define DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_Y DWIN_LCD_COORD_BOTTOMRIGHT_Y
+
+/* From Thinkyhead - 
+
+We'll use the selected font size to determine a row height, and then multiply by the row height to get the display line, 
+and we'll draw a box on the selected line, and print the text of the menu item, and all that. The DWIN has the ability 
+to cut one part of the screen and draw it in another position, and this is used by dwin.cpp to handle the scrolling.
+Scrolling handled by the screen is a really good optimization that we haven't got in MarlinUI yet, so it makes sense 
+to add that when working on the screen drawing. For that we will probably need to do some tweaks to support drawing each 
+menu item only when: (1) doing a full screen refresh, and (2) when the menu item becomes the new top or bottom line.
+
+===============================================================================
+Main Screen Layout
+===============================================================================
+- Title is just the text
+    Main
+- Logo is Creality logo, in the future may be able to use a custom logo
+- Print, Prepare, Control, Info are selectable menu items with icons
+- Indicators, Letters are placeholders for icons
+  *HH - Hot End temperature current and set to, in the example this would be
+        currently 123 degrees, set to 245.
+  *BB - Bed Temperature current and set to, in the example this would be 
+        currently 10 degrees, set to 70.
+  *FF - Feedrate percentage
+  *ZZ - Z offset
+
+0,0   |-------------------------------------------------| 271,0
+      | Main                                            |         Title Bar
+0,30  |-------------------------------------------------| 271,30
+0,31  |                                                 | 271,31
+      |                  |  / \/__/ \                   |         Logo Area
+      |                  |__\_/\_|\_/                   |
+      |                                                 |
+      |                                                 | x,y
+      |    |---------------|       |---------------|    | x,y
+      |    |               |       |               |    |
+      |    |               |       |               |    |
+      |    |               |       |               |    |
+      |    |     Print     |       |    Prepare    |    |
+      |    |               |       |               |    |
+      |    |---------------|       |---------------|    |
+      |                                                 |         Menu Items
+      |    |---------------|       |---------------|    |
+      |    |               |       |               |    |
+      |    |               |       |               |    |
+      |    |               |       |               |    |
+      |    |    Control    |       |      Info     |    |
+      |    |               |       |               |    |
+      |    |---------------|       |---------------|    |
+      |                                                 | x,y
+      |                                                 | x,y
+      |    HH 123 / 245            BB 10 / 70           |
+      |                                                 |
+      |    FF 100%                 ZZ 0.00              |         Indicators
+      |                                                 |
+0,479 |-------------------------------------------------| 271,479
+*/
+
+#endif
