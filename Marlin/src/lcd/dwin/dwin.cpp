@@ -21,6 +21,8 @@
  */
 
 #include "../../inc/MarlinConfigPre.h"
+#include <stdio.h>
+#include <string.h>
 
 #if ENABLED(DWIN_CREALITY_LCD)
 /**
@@ -35,22 +37,13 @@
 #define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
 #define ENCODER_WAIT    20
 
-#ifndef MACHINE_SIZE
-  #define MACHINE_SIZE "220x220x250"
-#endif
-#ifndef CORP_WEBSITE_C
-  #define CORP_WEBSITE_C "www.cxsw3d.com"
-#endif
-#ifndef CORP_WEBSITE_E
-  #define CORP_WEBSITE_E "www.creality.com"
-#endif
-
 // Initialize Values
 HMI_Flag HMI_flag{0};
-millis_t dwin_heat_time = 0;
-float zprobe_zoffset    = 0;
-millis_t Encoder_ms     = 0; // Encoder related timing
-int currentScreenIndex = 0, lastScreenIndex = 0; // Used to store location in menu tree
+millis_t dwin_heat_time   = 0;
+float zprobe_zoffset      = 0;
+millis_t Encoder_ms       = 0; // Encoder related timing
+int currentScreenIndex    = 0; // Used to store Screen location in menu tree
+int currentCursorPosition = 0; // Used to store Cursor Postion on Screen
 
 /*
 constexpr uint16_t TROWS = 6, MROWS = TROWS - 1,        // Total rows, and other-than-Back
@@ -103,6 +96,11 @@ inline void MenuItem_Draw_Back(const bool is_sel=true) {
   if (is_sel) Draw_Menu_Cursor(0);
 }
 
+void ShowMainMenu(void) {
+  currentScreenIndex = MainMenuScreen;
+  Screen_DrawMainMenu(!HMI_flag.language_flag);
+}
+
 void HMI_MainMenu(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
@@ -110,10 +108,14 @@ void HMI_MainMenu(void) {
   Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
 
   if (encoder_diffState == ENCODER_DIFF_CW) {
-    Draw_TitleText((char*)"Rotary CW"); // ONLY FOR TESTING
+    if (currentCursorPosition == 3) { currentCursorPosition = 0; } else { currentCursorPosition +=1; }// TODO: Design/think about looping over max/mins and dealing with LEVELING
+    char str[80]; sprintf(str, "Rotary CW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+    Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }  
-  else if (encoder_diffState == ENCODER_DIFF_CCW) {  
-    Draw_TitleText((char*)"Rotary CCW"); // ONLY FOR TESTING
+  else if (encoder_diffState == ENCODER_DIFF_CCW) {     
+    if (currentCursorPosition == 0 ) { currentCursorPosition = 3; } else { currentCursorPosition-=1; } // TODO: Design/think about looping under min
+    char str[80]; sprintf(str, "Rotary CCW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+    Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }
   else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
     Draw_TitleText((char*)"Rotary Enter"); // ONLY FOR TESTING
@@ -137,11 +139,6 @@ inline void Draw_Info_Menu() {
     DWIN_ICON_Show(ICON, ICON_PrintSize + i, 26, 99 + i * 73);
     DWIN_Draw_Line(THEME_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
   }
-}
-
-void ShowMainMenu(void) {
-  currentScreenIndex = MainMenuScreen;
-  Screen_DrawMainMenu(!HMI_flag.language_flag);
 }
 
 /* Info Screen */
@@ -263,7 +260,7 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
 void HMI_StartFrame(const bool with_update) {
   Screen_DrawMainMenu(!HMI_flag.language_flag);
 
-// Draw indicators
+  // Draw indicators
   Draw_Indicator_Frame_Background();
   Draw_Indicator_Temperature_Hotend();
   Draw_Indicator_Temperature_Bed();

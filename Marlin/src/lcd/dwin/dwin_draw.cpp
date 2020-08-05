@@ -56,23 +56,23 @@ void Draw_Logo() {
 }
 
 void Draw_ICON_Button_Print(boolean EN, boolean selected) {
-    DWIN_ICON_Show(ICON, TERN(selected, ICON_Print_1, ICON_Print_0), THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);  
+  DWIN_ICON_Show(ICON, TERN(selected, ICON_Print_0, ICON_Print_1), THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);  // ICON_BLAH_1 is selected icon look
 }
 
 void Draw_ICON_Button_Prepare(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Prepare_1, ICON_Prepare_0), THEME_ICON_PREPARE_X, THEME_ICON_PREPARE_Y);
+  DWIN_ICON_Show(ICON, TERN(selected,ICON_Prepare_0, ICON_Prepare_1), THEME_ICON_PREPARE_X, THEME_ICON_PREPARE_Y);
 }
 
 void Draw_ICON_Button_Control(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Control_1, ICON_Control_0), THEME_ICON_CONTROL_X, THEME_ICON_CONTROL_Y);
+  DWIN_ICON_Show(ICON, TERN(selected,ICON_Control_0, ICON_Control_1), THEME_ICON_CONTROL_X, THEME_ICON_CONTROL_Y);
 }
 
 void Draw_ICON_Button_Info(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Info_1,ICON_Info_0), THEME_ICON_INFO_X, THEME_ICON_INFO_Y);
+  DWIN_ICON_Show(ICON, TERN(selected,ICON_Info_0,ICON_Info_1), THEME_ICON_INFO_X, THEME_ICON_INFO_Y);
 }
 
 void Draw_ICON_Button_Leveling(boolean EN, boolean selected) { 
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Leveling_1,ICON_Leveling_0), THEME_ICON_LEVELING_X, THEME_ICON_LEVELING_Y);
+  DWIN_ICON_Show(ICON, TERN(selected,ICON_Leveling_0,ICON_Leveling_1), THEME_ICON_LEVELING_X, THEME_ICON_LEVELING_Y);
 }
 
 // TESTING AREA - KEEP OUT!

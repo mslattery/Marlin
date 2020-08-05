@@ -30,4 +30,14 @@
  * Screen implementations
  * 
 */
+
+enum Cursor_MainScreen {
+  MainMenuScreen_Cursor_Print,
+  MainMenuScreen_Cursor_Prepare,
+  MainMenuScreen_Cursor_Control,
+  MainMenuScreen_Cursor_Leveling,
+  MainMenuScreen_Cursor_Info
+};
+
 void Screen_DrawMainMenu(boolean EN);
+void Screen_MainMenu_Update(boolean EN, int currentCursorPosition);

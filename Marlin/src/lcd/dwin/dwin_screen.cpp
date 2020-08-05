@@ -27,7 +27,7 @@
  * Screen implementations
  * 
 */
-void Screen_DrawMainMenu(boolean EN) { // EN is English
+void Screen_DrawMainMenu(boolean EN) { // Only use when changing to Main Menu, use Update instead for changes
   Draw_MainWindowBackground();
   Draw_Logo();
   if (EN) {
@@ -35,8 +35,51 @@ void Screen_DrawMainMenu(boolean EN) { // EN is English
   } else {
     DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"  // TODO: Figure out how CN works.
   }
-  Draw_ICON_Button_Print(EN, false);
+  Draw_ICON_Button_Print(EN, true);
   Draw_ICON_Button_Prepare(EN, false);
   Draw_ICON_Button_Control(EN, false);
-  TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN,false), Draw_ICON_Button_Info(EN,false));
+  TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+}
+
+void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Updates based on cursor with DWIN_Frame_AreaCopy(1, 1, 447, 271 - 243, 479 - 19, 58, 201);
+  switch (currentCursorPosition)
+  {
+  case MainMenuScreen_Cursor_Print:
+    Draw_ICON_Button_Print(EN, true);
+    Draw_ICON_Button_Prepare(EN, false);
+    Draw_ICON_Button_Control(EN, false);
+    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+    break;
+
+  case MainMenuScreen_Cursor_Prepare:
+    Draw_ICON_Button_Print(EN, false);
+    Draw_ICON_Button_Prepare(EN, true);
+    Draw_ICON_Button_Control(EN, false);
+    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+    break;
+
+  case MainMenuScreen_Cursor_Control:
+    Draw_ICON_Button_Print(EN, false);
+    Draw_ICON_Button_Prepare(EN, false);
+    Draw_ICON_Button_Control(EN, true);
+    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+    break;
+
+  case MainMenuScreen_Cursor_Leveling:
+    Draw_ICON_Button_Print(EN, false);
+    Draw_ICON_Button_Prepare(EN, false);
+    Draw_ICON_Button_Control(EN, false);
+    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, true), Draw_ICON_Button_Info(EN, false));
+    break;
+
+  case MainMenuScreen_Cursor_Info:
+    Draw_ICON_Button_Print(EN, false);
+    Draw_ICON_Button_Prepare(EN, false);
+    Draw_ICON_Button_Control(EN, false);
+    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, true));
+    break;
+
+  default:
+    break;
+  }
 }
