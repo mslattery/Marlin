@@ -19,31 +19,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 /**
- * dwin_icons.h
+ * dwin_layout.cpp
  *
- * LCD display icons
+ * DWIN Layout/Theme 
  * 
- *               |\__-----__/|
-            _____/::::::  :::\_____
-           '__--(:::::::::..::)--__`
-           /  _- \/: :::::::\/ -_  \
-             /   /::.   .::::\   \
-                |:::::::::::::|
-               _|/:::::____::\|_
-             /::/:::::/:_::\::\:.\
-            |::|  ..:(_/ \::|::|::|
-            |::|:::::. ::|: |::|.:|
-             \:|::  :::_/::/: :|:/
-           ((___\____\____/___/___)) - Slats
  */
-
-// Icons
-#define ICON                      0x09
-#define ICON_LOGO                  0
-#define ICON_Back                 13
-#define ICON_PrintSize            55
-#define ICON_Version              56
-#define ICON_Contact              57

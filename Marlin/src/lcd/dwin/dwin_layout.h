@@ -19,10 +19,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
-#ifndef DWIN_LAYOUT_H // Guard against circular references
-#define DWIN_LAYOUT_H
-
 #pragma once
 
 /**
@@ -91,7 +87,8 @@ Generally...
 #define DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X DWIN_LCD_COORD_LEFTMOST_X
 #define DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y (DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y + 1)
 #define DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X DWIN_LCD_COORD_RIGHTMOST_X
-#define DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y DWIN_LCD_COORD_BOTTOMRIGHT_Y
+#define DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y (DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y + DWIN_LAYOUT_DYNAMIC_AREA_HEIGHT - 1)
+
 // Indicator Area
 #define DWIN_LAYOUT_INDICATOR_HEIGHT 120  // Y values of 360 - 479
 #define DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_X DWIN_LCD_COORD_LEFTMOST_X
@@ -146,8 +143,8 @@ Main Screen Layout
       |    |    Control    |       |      Info     |    |
       |    |               |       |               |    |
       |    |---------------|       |---------------|    |
-      |                                                 | x,y
-      |                                                 | x,y
+0,359 |-------------------------------------------------| 271,359
+0,360 |                                                 | 271,360
       |    HH 123 / 245            BB 10 / 70           |
       |                                                 |
       |    FF 100%                 ZZ 0.00              |         Indicators
@@ -155,4 +152,37 @@ Main Screen Layout
 0,479 |-------------------------------------------------| 271,479
 */
 
-#endif
+// https://demmel.com/ilcd/help/16BitColorValues.htm
+#define DWIN_COLOR_WHITE             0xFFFF
+#define DWIN_COLOR_MAGENTA           0xF81F
+#define DWIN_COLOR_BLUE              0x001F
+#define DWIN_COLOR_GREEN             0x07E0
+
+// Font Sizes
+#define font6x12  0x00
+#define font8x16  0x01
+#define font10x20 0x02
+#define font12x24 0x03
+#define font14x28 0x04
+#define font16x32 0x05
+#define font20x40 0x06
+#define font24x48 0x07
+#define font28x56 0x08
+#define font32x64 0x09
+
+// Theme Fonts
+#define THEME_FONT_MENU   font8x16
+#define THEME_FONT_STAT   font10x20
+#define THEME_FONT_HEADER font10x20
+
+// Theme Colors
+#define THEME_COLOR_TITLE             DWIN_COLOR_WHITE
+#define THEME_COLOR_BACKGROUND_WINDOW 0x31E8  // Popup background color
+#define THEME_COLOR_BACKGROUND_BLUE   0x1125  // Dark blue background color
+#define THEME_COLOR_BACKGROUND_BLACK  0x0841  // black background color
+#define THEME_COLOR_FONT_WINDOW       0xD6BA  // Popup font background color
+#define THEME_COLOR_LINE              0x3A6A  // Split line color
+#define THEME_COLOR_CURSOR            0xEE2F  // blue square cursor color
+#define THEME_COLOR_PERCENT           0xFE29  // percentage color
+#define THEME_COLOR_BARFILL           0x10E4  // fill color of progress bar
+#define THEME_COLOR_SELECT            0x33BB  // selected color

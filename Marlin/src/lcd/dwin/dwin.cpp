@@ -31,10 +31,6 @@
  */
 
 #include "dwin.h"
-#include "dwin_lcd.h" // For Draw items, like DWIN_Draw_Rectangle
-#include "../ultralcd.h" // For MarlinUI
-#include "../../module/temperature.h" // For thermalManager
-#include "../../module/motion.h" // For feedrate_percentage
 
 #define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
 #define ENCODER_WAIT    20
@@ -78,39 +74,14 @@ inline ENCODER_DiffState get_encoder_state() {
   return state;
 }
 
-// Clear Region
-inline void Draw_Test() {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_GREEN, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_X, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_Y, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_X, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y);
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_MAGENTA, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y);
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BLUE, DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_X, DWIN_LAYOUT_INDICATOR_AREA_TOPLEFT_Y, DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_INDICATOR_AREA_BOTTOMRIGHT_Y);
-}
-
-inline void Draw_TitleBar_Background(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_X, DWIN_LAYOUT_TITLE_BAR_TOPLEFT_Y, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_X, DWIN_LAYOUT_TITLE_BAR_BOTTOMRIGHT_Y);
-}
-
-inline void Draw_DynamicArea_Background(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_X, DWIN_LAYOUT_DYNAMIC_AREA_TOPLEFT_Y, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_X, DWIN_LAYOUT_DYNAMIC_AREA_BOTTOMRIGHT_Y);
-}
-
-//inline void Clear_Menu_Area(void) {
-//  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT+1, DWIN_WIDTH,  DWIN_HEIGHT - 120); // TODO: Original Lower Left was 272,360, the DWIN goes to 272,480.  Thinking these last 120 rows are reserved, to review.
-//}
-
-inline void Clear_Main_Window(void) {
-  Draw_TitleBar_Background();
-  Draw_DynamicArea_Background();
-}
-// End Clear Region
-
 inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
   DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
 }
 
 inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
-  if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
+  if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
   if (icon) Draw_Menu_Icon(line, icon);
-  DWIN_Draw_Line(DWIN_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
+  DWIN_Draw_Line(THEME_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
 }
 
 // The "Back" label is always on the first line
@@ -122,7 +93,7 @@ inline void Draw_Back_Label(void) {
 }
 
 inline void Draw_Menu_Cursor(const uint8_t line) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
 }
 
 // Draw "Back" line at the top
@@ -136,49 +107,46 @@ void HMI_MainMenu(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
 
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, DWIN_LCD_COORD_RIGHTMOST_X, 250); // Clear the text first
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, 110, 200, DWIN_LCD_COORD_RIGHTMOST_X, 250); // Clear the text first
 
   if (encoder_diffState == ENCODER_DIFF_CW) {
-    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CW");
+    DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CW");
   }  
   else if (encoder_diffState == ENCODER_DIFF_CCW) {  
-    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CCW");
+    DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CCW");
   }
   else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
-    DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY ENTER");
+    DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY ENTER");
     currentScreenIndex = InfoScreen;
   }
   DWIN_UpdateLCD();
 }
 
-inline void Draw_Title_Text(const __FlashStringHelper * title) {
-  DWIN_Draw_String(false, false, HEADER_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLUE, 14, 4, (char*)title);
-}
-
 inline void Draw_Info_Menu() {
-  Clear_Main_Window();
-  Draw_Title_Text(GET_TEXT_F(MSG_INFO_SCREEN));
+  Draw_MainWindowBackground();
+
+  Draw_TitleText(GET_TEXT_F(MSG_INFO_SCREEN));
 
   MenuItem_Draw_Back();
 
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / 2, 122, (char*)MACHINE_SIZE);
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / 2, 195, (char*)SHORT_BUILD_VERSION);
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / 2, 268, (char*)CORP_WEBSITE_C);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / 2, 122, (char*)MACHINE_SIZE);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / 2, 195, (char*)SHORT_BUILD_VERSION);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / 2, 268, (char*)CORP_WEBSITE_C);
 
   LOOP_L_N(i, 3) {
     DWIN_ICON_Show(ICON, ICON_PrintSize + i, 26, 99 + i * 73);
-    DWIN_Draw_Line(DWIN_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
+    DWIN_Draw_Line(THEME_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
   }
 }
 
 void Draw_MainMenu(void) {
   currentScreenIndex = MainMenuScreen;
-  Clear_Main_Window();
+  Draw_MainWindowBackground();
   if (HMI_flag.language_flag) {
     DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"
   }
   else {
-    Draw_Title_Text(GET_TEXT_F(MSG_MAIN));
+    Draw_TitleText(GET_TEXT_F(MSG_MAIN));
   }
   DWIN_ICON_Show(ICON, ICON_LOGO, 71, 52);
   //ICON_Print();
@@ -274,28 +242,28 @@ void MarlinUI::clear_lcd() {
 #endif
 
 inline void Draw_Title_Bar_Background(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_RIGHTMOST_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT);
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_RIGHTMOST_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT);
 }
 
 inline void Draw_Indicator_Frame_Background(void) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, DWIN_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
 }
 
 inline void Draw_Indicator_Temperature_Hotend(void) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 33, 382, thermalManager.temp_hotend[0].celsius);
-  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_hotend[0].target);  
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33, 382, thermalManager.temp_hotend[0].celsius);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_hotend[0].target);  
 }
 
 inline void Draw_Indicator_Temperature_Bed(void) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 178, 382, thermalManager.temp_bed.celsius);
-  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_bed.target);
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178, 382, thermalManager.temp_bed.celsius);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_bed.target);
 }
 
 inline void Draw_Indicator_Feedrate(void) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, feedrate_percentage);
-  DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, 33 + (2 + 3) * STAT_CHR_W + 2, 429, (char*)"%");
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, feedrate_percentage);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + (2 + 3) * STAT_CHR_W + 2, 429, (char*)"%");
 }
 
 inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into parameters
@@ -304,15 +272,12 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
 
 /* Start of UI Loop */
 void HMI_StartFrame(const bool with_update) {
-  Clear_Main_Window();
+  Draw_MainWindowBackground();
 
-  // Draw backgrounds
   Draw_Title_Bar_Background();
-  Draw_Indicator_Frame_Background();
+  Draw_TitleText(GET_TEXT_F(MSG_MAIN));
 
-  // Test Items
-  //DWIN_Draw_String(false, false, STAT_FONT, DWIN_COLOR_WHITE, DWIN_COLOR_BACKGROUND_BLACK, DWIN_WIDTH/2, DWIN_HEIGHT/2, (char*)"Text Here");
-  //DWIN_Draw_Line(DWIN_COLOR_LINE_COLOR, 0, 100, DWIN_LCD_COORD_RIGHTMOST_X, 100);
+  Draw_Indicator_Frame_Background();
 
 // Draw indicators
   Draw_Indicator_Temperature_Hotend();

@@ -21,29 +21,18 @@
  */
 #pragma once
 
-/**
- * dwin_icons.h
- *
- * LCD display icons
- * 
- *               |\__-----__/|
-            _____/::::::  :::\_____
-           '__--(:::::::::..::)--__`
-           /  _- \/: :::::::\/ -_  \
-             /   /::.   .::::\   \
-                |:::::::::::::|
-               _|/:::::____::\|_
-             /::/:::::/:_::\::\:.\
-            |::|  ..:(_/ \::|::|::|
-            |::|:::::. ::|: |::|.:|
-             \:|::  :::_/::/: :|:/
-           ((___\____\____/___/___)) - Slats
- */
+#include "dwin_lcd.h" // For hardware draw calls
+#include "dwin_layout.h" // For Coord/Theme
+#include "../../MarlinCore.h" // for __FlashStringHelper
 
-// Icons
-#define ICON                      0x09
-#define ICON_LOGO                  0
-#define ICON_Back                 13
-#define ICON_PrintSize            55
-#define ICON_Version              56
-#define ICON_Contact              57
+/**
+ * 
+ * dwin_draw.h
+ *
+ * Abstracted draw implementations
+ * 
+*/
+void Draw_MainWindowBackground(void);
+void Draw_TitleBar_Background(void);
+void Draw_DynamicArea_Background(void);
+void Draw_TitleText(const __FlashStringHelper * titleText);

@@ -19,9 +19,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#ifndef DWIN_H // Guard against circular references
-#define DWIN_H
-
 #pragma once
 
 /**
@@ -31,26 +28,17 @@
  * This is the display on the Creality3d Ender 3 V2.
  * http://www.ampdisplay.com/documents/pdf/DWIN%20DGUS%20DEV%20GUIDE_V40_2014.pdf
  * 
- *               |\__-----__/|
-            _____/::::::  :::\_____
-           '__--(:::::::::..::)--__`
-           /  _- \/: :::::::\/ -_  \
-             /   /::.   .::::\   \
-                |:::::::::::::|
-               _|/:::::____::\|_
-             /::/:::::/:_::\::\:.\
-            |::|  ..:(_/ \::|::|::|
-            |::|:::::. ::|: |::|.:|
-             \:|::  :::_/::/: :|:/
-           ((___\____\____/___/___)) - Slats
  */
 
-#include "../../MarlinCore.h" // for millis_t
-#include "rotary_encoder.h"
+#include "../../MarlinCore.h" // for millis_t and __FlashStringHelper
+#include "../ultralcd.h" // For MarlinUI
+#include "../../module/temperature.h" // For thermalManager
+#include "../../module/motion.h" // For feedrate_percentage
 #include "dwin_icons.h"
-#include "dwin_colors.h"
-#include "dwin_fonts.h"
 #include "dwin_layout.h"
+#include "dwin_draw.h"
+#include "dwin_lcd.h" // For Draw items, like DWIN_Draw_Rectangle
+#include "rotary_encoder.h"
 
 extern millis_t dwin_heat_time;
 
@@ -140,5 +128,3 @@ void HMI_StartFrame(const bool with_update); // startup screen
 
 void DWIN_Update(void);
 void DWIN_CompletedHoming(void);
-
-#endif // end include guard
