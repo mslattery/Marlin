@@ -55,6 +55,11 @@ void Draw_Logo() {
   DWIN_ICON_Show(ICON, ICON_LOGO, THEME_LOGO_X, THEME_LOGO_Y);  
 }
 
+void Draw_ICON_Print(boolean EN) {
+  DWIN_ICON_Show(ICON, ICON_Print_0, THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);  
+  //DWIN_ICON_Show(ICON, ICON_Print_1, THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);
+}
+
 
 // TESTING AREA - KEEP OUT!
 void Draw_Test() {

@@ -261,14 +261,13 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
 
 /* Start of UI Loop */
 void HMI_StartFrame(const bool with_update) {
-  Draw_MainWindowBackground();
+  Screen_DrawMainMenu(!HMI_flag.language_flag);
 
-  Draw_Title_Bar_Background();
-  Draw_TitleText(GET_TEXT_F(MSG_MAIN));
-
-  Draw_Indicator_Frame_Background();
+//  Draw_Title_Bar_Background();
+//  Draw_TitleText(GET_TEXT_F(MSG_MAIN));
 
 // Draw indicators
+  Draw_Indicator_Frame_Background();
   Draw_Indicator_Temperature_Hotend();
   Draw_Indicator_Temperature_Bed();
   Draw_Indicator_Feedrate();

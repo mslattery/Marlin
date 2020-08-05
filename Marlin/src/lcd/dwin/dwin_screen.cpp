@@ -19,8 +19,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#pragma once
-
 #include "dwin_screen.h"
 /**
  * 
@@ -29,15 +27,16 @@
  * Screen implementations
  * 
 */
-void Screen_DrawMainMenu(boolean EN) { 
+void Screen_DrawMainMenu(boolean EN) { // EN is English
   Draw_MainWindowBackground();
   Draw_Logo();
   if (EN) {
     Draw_TitleText(GET_TEXT_F(MSG_MAIN));
   } else {
-    DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"
+    DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"  // TODO: Figure out how CN works.
   }
-  //ICON_Print();
+
+  Draw_ICON_Print(EN);
   //ICON_Prepare();
   //ICON_Control();
   //TERN(HAS_LEVELING, ICON_Leveling, ICON_StartInfo)(select_page.now == 3);

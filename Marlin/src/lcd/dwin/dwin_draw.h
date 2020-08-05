@@ -38,3 +38,4 @@ void Draw_TitleBar_Background(void);
 void Draw_DynamicArea_Background(void);
 void Draw_TitleText(const __FlashStringHelper * titleText);
 void Draw_Logo();
+void Draw_ICON_Print(boolean EN);

@@ -190,3 +190,5 @@ Main Screen Layout
 // Them Icons
 #define THEME_LOGO_X 71
 #define THEME_LOGO_Y 52
+#define THEME_ICON_PRINT_X 17
+#define THEME_ICON_PRINT_Y 130
