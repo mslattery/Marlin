@@ -21,20 +21,24 @@
  */
 #pragma once
 
-#include "dwin_lcd.h" // For hardware draw calls
-#include "dwin_layout.h" // For Coord/Theme
-#include "dwin_icons.h" // For icons
-#include "../../MarlinCore.h" // for __FlashStringHelper
-
+#include "dwin_screen.h"
 /**
  * 
- * dwin_draw.h
+ * dwin_screen.cpp
  *
- * Abstracted draw implementations
+ * Screen implementations
  * 
 */
-void Draw_MainWindowBackground(void);
-void Draw_TitleBar_Background(void);
-void Draw_DynamicArea_Background(void);
-void Draw_TitleText(const __FlashStringHelper * titleText);
-void Draw_Logo();
+void Screen_DrawMainMenu(boolean EN) { 
+  Draw_MainWindowBackground();
+  Draw_Logo();
+  if (EN) {
+    Draw_TitleText(GET_TEXT_F(MSG_MAIN));
+  } else {
+    DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"
+  }
+  //ICON_Print();
+  //ICON_Prepare();
+  //ICON_Control();
+  //TERN(HAS_LEVELING, ICON_Leveling, ICON_StartInfo)(select_page.now == 3);
+}

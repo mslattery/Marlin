@@ -139,20 +139,9 @@ inline void Draw_Info_Menu() {
   }
 }
 
-void Draw_MainMenu(void) {
+void ShowMainMenu(void) {
   currentScreenIndex = MainMenuScreen;
-  Draw_MainWindowBackground();
-  if (HMI_flag.language_flag) {
-    DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"
-  }
-  else {
-    Draw_TitleText(GET_TEXT_F(MSG_MAIN));
-  }
-  DWIN_ICON_Show(ICON, ICON_LOGO, 71, 52);
-  //ICON_Print();
-  //ICON_Prepare();
-  //ICON_Control();
-  //TERN(HAS_LEVELING, ICON_Leveling, ICON_StartInfo)(select_page.now == 3);
+  Screen_DrawMainMenu(!HMI_flag.language_flag);
 }
 
 /* Info Screen */
@@ -160,7 +149,7 @@ void HMI_Info(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
   if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    Draw_MainMenu();
+    ShowMainMenu();
   } else {
     Draw_Info_Menu();
     //Draw_Test();

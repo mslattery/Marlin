@@ -21,20 +21,12 @@
  */
 #pragma once
 
-#include "dwin_lcd.h" // For hardware draw calls
-#include "dwin_layout.h" // For Coord/Theme
-#include "dwin_icons.h" // For icons
-#include "../../MarlinCore.h" // for __FlashStringHelper
-
+#include "dwin_draw.h"
 /**
  * 
- * dwin_draw.h
+ * dwin_screen.h
  *
- * Abstracted draw implementations
+ * Screen implementations
  * 
 */
-void Draw_MainWindowBackground(void);
-void Draw_TitleBar_Background(void);
-void Draw_DynamicArea_Background(void);
-void Draw_TitleText(const __FlashStringHelper * titleText);
-void Draw_Logo();
+void Screen_DrawMainMenu(boolean EN);

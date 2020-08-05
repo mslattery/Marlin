@@ -186,3 +186,7 @@ Main Screen Layout
 #define THEME_COLOR_PERCENT           0xFE29  // percentage color
 #define THEME_COLOR_BARFILL           0x10E4  // fill color of progress bar
 #define THEME_COLOR_SELECT            0x33BB  // selected color
+
+// Them Icons
+#define THEME_LOGO_X 71
+#define THEME_LOGO_Y 52

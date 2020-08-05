@@ -37,6 +37,7 @@
 #include "dwin_icons.h"
 #include "dwin_layout.h"
 #include "dwin_draw.h"
+#include "dwin_screen.h"
 #include "dwin_lcd.h" // For Draw items, like DWIN_Draw_Rectangle
 #include "rotary_encoder.h"
 
