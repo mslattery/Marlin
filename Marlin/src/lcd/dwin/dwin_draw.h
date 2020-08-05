@@ -36,6 +36,11 @@
 void Draw_MainWindowBackground(void);
 void Draw_TitleBar_Background(void);
 void Draw_DynamicArea_Background(void);
+void Draw_TitleText(const char * titleText);
 void Draw_TitleText(const __FlashStringHelper * titleText);
 void Draw_Logo();
-void Draw_ICON_Print(boolean EN);
+void Draw_ICON_Button_Print(boolean EN, boolean selected);
+void Draw_ICON_Button_Prepare(boolean EN, boolean selected);
+void Draw_ICON_Button_Control(boolean EN, boolean selected);
+void Draw_ICON_Button_Info(boolean EN, boolean selected);
+void Draw_ICON_Button_Leveling(boolean EN, boolean selected);

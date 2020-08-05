@@ -35,9 +35,8 @@ void Screen_DrawMainMenu(boolean EN) { // EN is English
   } else {
     DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Home"  // TODO: Figure out how CN works.
   }
-
-  Draw_ICON_Print(EN);
-  //ICON_Prepare();
-  //ICON_Control();
-  //TERN(HAS_LEVELING, ICON_Leveling, ICON_StartInfo)(select_page.now == 3);
+  Draw_ICON_Button_Print(EN, false);
+  Draw_ICON_Button_Prepare(EN, false);
+  Draw_ICON_Button_Control(EN, false);
+  TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN,false), Draw_ICON_Button_Info(EN,false));
 }

@@ -107,16 +107,16 @@ void HMI_MainMenu(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
 
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, 110, 200, DWIN_LCD_COORD_RIGHTMOST_X, 250); // Clear the text first
+  Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
 
   if (encoder_diffState == ENCODER_DIFF_CW) {
-    DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CW");
+    Draw_TitleText((char*)"Rotary CW"); // ONLY FOR TESTING
   }  
   else if (encoder_diffState == ENCODER_DIFF_CCW) {  
-    DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY CCW");
+    Draw_TitleText((char*)"Rotary CCW"); // ONLY FOR TESTING
   }
   else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
-    DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 110, 200, (char*)"ROTARY ENTER");
+    Draw_TitleText((char*)"Rotary Enter"); // ONLY FOR TESTING
     currentScreenIndex = InfoScreen;
   }
   DWIN_UpdateLCD();
@@ -263,25 +263,12 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
 void HMI_StartFrame(const bool with_update) {
   Screen_DrawMainMenu(!HMI_flag.language_flag);
 
-//  Draw_Title_Bar_Background();
-//  Draw_TitleText(GET_TEXT_F(MSG_MAIN));
-
 // Draw indicators
   Draw_Indicator_Frame_Background();
   Draw_Indicator_Temperature_Hotend();
   Draw_Indicator_Temperature_Bed();
   Draw_Indicator_Feedrate();
   Draw_Indicator_ZOffset();
-
-/* -- TODO: Draw Icons
-  DWIN_ICON_Show(ICON, ICON_HotendTemp, 13, 381);
-  #if HOTENDS > 1
-    // DWIN_ICON_Show(ICON,ICON_HotendTemp, 13, 381);
-  #endif
-  DWIN_ICON_Show(ICON, ICON_BedTemp,   158, 381);
-  DWIN_ICON_Show(ICON, ICON_Speed,      13, 429);
-  DWIN_ICON_Show(ICON, ICON_Zoffset,   158, 428);
-*/
 
   if (with_update) {
     DWIN_UpdateLCD();

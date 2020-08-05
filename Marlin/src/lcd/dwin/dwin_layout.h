@@ -187,8 +187,20 @@ Main Screen Layout
 #define THEME_COLOR_BARFILL           0x10E4  // fill color of progress bar
 #define THEME_COLOR_SELECT            0x33BB  // selected color
 
-// Them Icons
+// Theme Icons
 #define THEME_LOGO_X 71
 #define THEME_LOGO_Y 52
 #define THEME_ICON_PRINT_X 17
 #define THEME_ICON_PRINT_Y 130
+#define THEME_ICON_PREPARE_X 145
+#define THEME_ICON_PREPARE_Y 130
+#define THEME_ICON_CONTROL_X 17 
+#define THEME_ICON_CONTROL_Y 246
+#define THEME_ICON_INFO_X 145
+#define THEME_ICON_INFO_Y 246
+#define THEME_ICON_LEVELING_X 145 // NOTE Same Location as INFO, so only one can be shown at a time
+#define THEME_ICON_LEVELING_Y 246
+
+// Theme Text Locations
+#define THEME_TITLE_X 14
+#define THEME_TITLE_Y 4
