@@ -41,16 +41,6 @@
 #include "dwin_lcd.h" // For Draw items, like DWIN_Draw_Rectangle
 #include "rotary_encoder.h"
 
-#ifndef MACHINE_SIZE
-  #define MACHINE_SIZE "220x220x250"
-#endif
-#ifndef CORP_WEBSITE_C
-  #define CORP_WEBSITE_C "www.cxsw3d.com"
-#endif
-#ifndef CORP_WEBSITE_E
-  #define CORP_WEBSITE_E "www.creality.com"
-#endif
-
 extern millis_t dwin_heat_time;
 
 typedef struct {

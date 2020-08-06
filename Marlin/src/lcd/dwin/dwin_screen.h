@@ -21,8 +21,6 @@
  */
 #pragma once
 
-#include "dwin_draw.h"
-
 /**
  * 
  * dwin_screen.h
@@ -30,6 +28,22 @@
  * Screen implementations
  * 
 */
+#include "dwin_draw.h"
+#include "../../inc/MarlinConfigPre.h" // for HAS_LEVELING
+
+#ifndef HAS_LEVELING  // If bed leveling not defined
+#define HAS_LEVELING 0
+#endif
+
+#ifndef MACHINE_SIZE
+  #define MACHINE_SIZE "220x220x250"
+#endif
+#ifndef CORP_WEBSITE_C
+  #define CORP_WEBSITE_C "www.cxsw3d.com"
+#endif
+#ifndef CORP_WEBSITE_E
+  #define CORP_WEBSITE_E "www.creality.com"
+#endif
 
 enum Cursor_MainScreen {
   MainMenuScreen_Cursor_Print,
@@ -41,3 +55,4 @@ enum Cursor_MainScreen {
 
 void Screen_DrawMainMenu(boolean EN);
 void Screen_MainMenu_Update(boolean EN, int currentCursorPosition);
+void Screen_DrawInfoMenu(boolean EN);

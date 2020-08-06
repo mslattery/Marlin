@@ -204,3 +204,10 @@ Main Screen Layout
 // Theme Text Locations
 #define THEME_TITLE_X 14
 #define THEME_TITLE_Y 4
+
+// Character Widths for Calculations
+#define MBASE(L) (49 + (L)*MLINE)
+constexpr uint16_t MLINE = 53,                          // Menu line height
+                   LBLX = 60,                           // Menu item label X
+                   MENU_CHR_W = 8,                      // Menu Char Width
+                   STAT_CHR_W = 10;      

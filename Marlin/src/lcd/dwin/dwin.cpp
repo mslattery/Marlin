@@ -50,12 +50,14 @@ constexpr uint16_t TROWS = 6, MROWS = TROWS - 1,        // Total rows, and other
                    TITLE_HEIGHT = 30,                   // Title bar height. SLATS - I moved to LAYOUT_TITLE_BAR_HEIGHT
                    MENU_CHR_W = 8, STAT_CHR_W = 10;
 */
-constexpr uint16_t MLINE = 53,                          // Menu line height
+
+/*constexpr uint16_t MLINE = 53,                          // Menu line height
                    LBLX = 60,                           // Menu item label X
                    MENU_CHR_W = 8,                      // Menu Char Width
                    STAT_CHR_W = 10;                     // TODO: This is used in layout need to understand, STATIC CHAR WIDTH!
+*/
 
-#define MBASE(L) (49 + (L)*MLINE)
+//#define MBASE(L) (49 + (L)*MLINE)
 
 void HMI_Init(void) { }
 
@@ -101,44 +103,47 @@ void ShowMainMenu(void) {
   Screen_DrawMainMenu(!HMI_flag.language_flag);
 }
 
+void ShowInfoMenu(void) {
+  currentScreenIndex = InfoScreen;
+  Screen_DrawInfoMenu(!HMI_flag.language_flag);
+}
+
 void HMI_MainMenu(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
-
-  Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
-
   if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (currentCursorPosition == 3) { currentCursorPosition = 0; } else { currentCursorPosition +=1; }
+    if (currentCursorPosition >= 3) { currentCursorPosition = 0; } else {currentCursorPosition += 1; } //  >= takes care of Leveling (3) vs Info (4)
+    //Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
     //char str[80]; sprintf(str, "Rotary CW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
     Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }  
   else if (encoder_diffState == ENCODER_DIFF_CCW) {     
     if (currentCursorPosition == 0 ) { currentCursorPosition = 3; } else { currentCursorPosition-=1; }
+    //Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
     //char str[80]; sprintf(str, "Rotary CCW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
     Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }
   else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
-    Draw_TitleText((char*)"Rotary Enter"); // ONLY FOR TESTING
-    currentScreenIndex = InfoScreen;
+    switch (currentCursorPosition)
+    {
+    case 1: // Prepare
+      currentScreenIndex = Prepare;
+      break;
+    case 2: // Control
+      currentScreenIndex = Control;
+      break;
+    case 3: // Leveling & Info
+      if (HAS_LEVELING) {
+        currentScreenIndex = Leveling;
+      } else {
+        ShowInfoMenu();
+      }
+      break;
+    default:
+      break;
+    }
   }
   DWIN_UpdateLCD();
-}
-
-inline void Draw_Info_Menu() {
-  Draw_MainWindowBackground();
-
-  Draw_TitleText(GET_TEXT_F(MSG_INFO_SCREEN));
-
-  MenuItem_Draw_Back();
-
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / 2, 122, (char*)MACHINE_SIZE);
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / 2, 195, (char*)SHORT_BUILD_VERSION);
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / 2, 268, (char*)CORP_WEBSITE_C);
-
-  LOOP_L_N(i, 3) {
-    DWIN_ICON_Show(ICON, ICON_PrintSize + i, 26, 99 + i * 73);
-    DWIN_Draw_Line(THEME_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
-  }
 }
 
 /* Info Screen */
@@ -148,13 +153,16 @@ void HMI_Info(void) {
   if (encoder_diffState == ENCODER_DIFF_ENTER) {
     ShowMainMenu();
   } else {
-    Draw_Info_Menu();
-    //Draw_Test();
+    ShowInfoMenu();
   }
   DWIN_UpdateLCD();
 }
 
 void DWIN_HandleScreen(void) {
+
+  Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
+  char str[80]; sprintf(str, "HS Screen:%i Cursor:%i", currentScreenIndex, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+
   switch (currentScreenIndex) {
     case MainMenuScreen:              HMI_MainMenu(); break;
     case InfoScreen:                  HMI_Info(); break;

@@ -20,11 +20,6 @@
  *
  */
 #include "dwin_screen.h"
-#include "../../inc/MarlinConfigPre.h" // for HAS_LEVELING
-
-#ifndef HAS_LEVELING  // If bed leveling not defined
-#define HAS_LEVELING 0
-#endif
 
 /**
  * 
@@ -52,10 +47,11 @@ void Screen_DrawMainMenu(boolean EN) { // Only use when changing to Main Menu, u
   }
 }
 
+// Updates MainMenu screen
 void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Updates based on cursor with DWIN_Frame_AreaCopy(1, 1, 447, 271 - 243, 479 - 19, 58, 201);
 
   Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
-  char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+  // char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
 
   if ((currentCursorPosition==3) && (!HAS_LEVELING)) {  // If no bed leveling then position 3 is really position 4 (INFO).
       currentCursorPosition = 4; 
@@ -99,5 +95,25 @@ void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Upd
 
     default:
       break;
+  }
+}
+
+// Draws Info screen
+void Screen_DrawInfoMenu(boolean EN) {
+  Draw_MainWindowBackground();
+  if (EN) {
+    Draw_TitleText(GET_TEXT_F(MSG_INFO_SCREEN));
+  } else {
+    DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Info"  // TODO: Figure out how CN works.
+  } 
+
+  //MenuItem_Draw_Back(); // TODO: Draw Back Item
+
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / 2, 122, (char*)MACHINE_SIZE);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / 2, 195, (char*)SHORT_BUILD_VERSION);
+  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / 2, 268, (char*)CORP_WEBSITE_C);
+  LOOP_L_N(i, 3) {
+    DWIN_ICON_Show(ICON, ICON_PrintSize + i, 26, 99 + i * 73);
+    DWIN_Draw_Line(THEME_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
   }
 }
