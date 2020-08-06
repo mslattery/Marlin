@@ -20,6 +20,12 @@
  *
  */
 #include "dwin_screen.h"
+#include "../../inc/MarlinConfigPre.h" // for HAS_LEVELING
+
+#ifndef HAS_LEVELING  // If bed leveling not defined
+#define HAS_LEVELING 0
+#endif
+
 /**
  * 
  * dwin_screen.cpp
@@ -38,48 +44,60 @@ void Screen_DrawMainMenu(boolean EN) { // Only use when changing to Main Menu, u
   Draw_ICON_Button_Print(EN, true);
   Draw_ICON_Button_Prepare(EN, false);
   Draw_ICON_Button_Control(EN, false);
-  TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+
+  if (HAS_LEVELING) {
+    Draw_ICON_Button_Leveling(EN, false); 
+  } else {
+    Draw_ICON_Button_Info(EN, false);
+  }
 }
 
 void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Updates based on cursor with DWIN_Frame_AreaCopy(1, 1, 447, 271 - 243, 479 - 19, 58, 201);
-  switch (currentCursorPosition)
-  {
-  case MainMenuScreen_Cursor_Print:
-    Draw_ICON_Button_Print(EN, true);
-    Draw_ICON_Button_Prepare(EN, false);
-    Draw_ICON_Button_Control(EN, false);
-    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
-    break;
 
-  case MainMenuScreen_Cursor_Prepare:
-    Draw_ICON_Button_Print(EN, false);
-    Draw_ICON_Button_Prepare(EN, true);
-    Draw_ICON_Button_Control(EN, false);
-    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
-    break;
+  Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
+  char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
 
-  case MainMenuScreen_Cursor_Control:
-    Draw_ICON_Button_Print(EN, false);
-    Draw_ICON_Button_Prepare(EN, false);
-    Draw_ICON_Button_Control(EN, true);
-    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
-    break;
+  if ((currentCursorPosition==3) && (!HAS_LEVELING)) {  // If no bed leveling then position 3 is really position 4 (INFO).
+      currentCursorPosition = 4; 
+  }
 
-  case MainMenuScreen_Cursor_Leveling:
-    Draw_ICON_Button_Print(EN, false);
-    Draw_ICON_Button_Prepare(EN, false);
-    Draw_ICON_Button_Control(EN, false);
-    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, true), Draw_ICON_Button_Info(EN, false));
-    break;
+  switch (currentCursorPosition)  {   
+    case MainMenuScreen_Cursor_Print:
+      Draw_ICON_Button_Print(EN, true);
+      Draw_ICON_Button_Prepare(EN, false);
+      Draw_ICON_Button_Control(EN, false);
+      TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+      break;
 
-  case MainMenuScreen_Cursor_Info:
-    Draw_ICON_Button_Print(EN, false);
-    Draw_ICON_Button_Prepare(EN, false);
-    Draw_ICON_Button_Control(EN, false);
-    TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, true));
-    break;
+    case MainMenuScreen_Cursor_Prepare:
+      Draw_ICON_Button_Print(EN, false);
+      Draw_ICON_Button_Prepare(EN, true);
+      Draw_ICON_Button_Control(EN, false);
+      TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+      break;
 
-  default:
-    break;
+    case MainMenuScreen_Cursor_Control:
+      Draw_ICON_Button_Print(EN, false);
+      Draw_ICON_Button_Prepare(EN, false);
+      Draw_ICON_Button_Control(EN, true);
+      TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, false));
+      break;
+
+    case MainMenuScreen_Cursor_Leveling:
+      Draw_ICON_Button_Print(EN, false);
+      Draw_ICON_Button_Prepare(EN, false);
+      Draw_ICON_Button_Control(EN, false);
+      TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, true), Draw_ICON_Button_Info(EN, false));
+      break;
+
+    case MainMenuScreen_Cursor_Info:
+      Draw_ICON_Button_Print(EN, false);
+      Draw_ICON_Button_Prepare(EN, false);
+      Draw_ICON_Button_Control(EN, false);
+      TERN(HAS_LEVELING, Draw_ICON_Button_Leveling(EN, false), Draw_ICON_Button_Info(EN, true));
+      break;
+
+    default:
+      break;
   }
 }

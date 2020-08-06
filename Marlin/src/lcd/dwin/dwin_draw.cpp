@@ -56,23 +56,44 @@ void Draw_Logo() {
 }
 
 void Draw_ICON_Button_Print(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected, ICON_Print_0, ICON_Print_1), THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);  // ICON_BLAH_1 is selected icon look
+  if (selected) {
+    DWIN_ICON_Show(ICON, ICON_Print_1, THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);
+  }
+  else {
+    DWIN_ICON_Show(ICON, ICON_Print_0, THEME_ICON_PRINT_X, THEME_ICON_PRINT_Y);
+  }  
 }
 
 void Draw_ICON_Button_Prepare(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Prepare_0, ICON_Prepare_1), THEME_ICON_PREPARE_X, THEME_ICON_PREPARE_Y);
+  if (selected) {
+    DWIN_ICON_Show(ICON, ICON_Prepare_1, THEME_ICON_PREPARE_X, THEME_ICON_PREPARE_Y);
+  } else {
+    DWIN_ICON_Show(ICON, ICON_Prepare_0, THEME_ICON_PREPARE_X, THEME_ICON_PREPARE_Y);
+  }
 }
 
 void Draw_ICON_Button_Control(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Control_0, ICON_Control_1), THEME_ICON_CONTROL_X, THEME_ICON_CONTROL_Y);
+  if (selected) {
+    DWIN_ICON_Show(ICON, ICON_Control_1, THEME_ICON_CONTROL_X, THEME_ICON_CONTROL_Y);
+  } else {
+    DWIN_ICON_Show(ICON, ICON_Control_0, THEME_ICON_CONTROL_X, THEME_ICON_CONTROL_Y);
+  }
 }
 
 void Draw_ICON_Button_Info(boolean EN, boolean selected) {
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Info_0,ICON_Info_1), THEME_ICON_INFO_X, THEME_ICON_INFO_Y);
+  if (selected) {
+    DWIN_ICON_Show(ICON, ICON_Info_1, THEME_ICON_INFO_X, THEME_ICON_INFO_Y);
+  } else {
+    DWIN_ICON_Show(ICON, ICON_Info_0, THEME_ICON_INFO_X, THEME_ICON_INFO_Y);
+  }
 }
 
 void Draw_ICON_Button_Leveling(boolean EN, boolean selected) { 
-  DWIN_ICON_Show(ICON, TERN(selected,ICON_Leveling_0,ICON_Leveling_1), THEME_ICON_LEVELING_X, THEME_ICON_LEVELING_Y);
+  if (selected) {
+    DWIN_ICON_Show(ICON, ICON_Leveling_1, THEME_ICON_LEVELING_X, THEME_ICON_LEVELING_Y);
+  } else {
+    DWIN_ICON_Show(ICON, ICON_Leveling_0, THEME_ICON_LEVELING_X, THEME_ICON_LEVELING_Y);
+  }
 }
 
 // TESTING AREA - KEEP OUT!

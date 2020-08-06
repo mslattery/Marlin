@@ -108,13 +108,13 @@ void HMI_MainMenu(void) {
   Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
 
   if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (currentCursorPosition == 3) { currentCursorPosition = 0; } else { currentCursorPosition +=1; }// TODO: Design/think about looping over max/mins and dealing with LEVELING
-    char str[80]; sprintf(str, "Rotary CW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+    if (currentCursorPosition == 3) { currentCursorPosition = 0; } else { currentCursorPosition +=1; }
+    //char str[80]; sprintf(str, "Rotary CW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
     Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }  
   else if (encoder_diffState == ENCODER_DIFF_CCW) {     
-    if (currentCursorPosition == 0 ) { currentCursorPosition = 3; } else { currentCursorPosition-=1; } // TODO: Design/think about looping under min
-    char str[80]; sprintf(str, "Rotary CCW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+    if (currentCursorPosition == 0 ) { currentCursorPosition = 3; } else { currentCursorPosition-=1; }
+    //char str[80]; sprintf(str, "Rotary CCW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
     Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }
   else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
@@ -199,7 +199,7 @@ void DWIN_HandleScreen(void) {
   }
 }
 
-// Main UI Loop
+// Main UI Loop - Continually called after startup
 void DWIN_Update(void) {
   //HMI_SDCardUpdate();   // SD card update
   DWIN_HandleScreen();  // Handle current screen state
@@ -256,7 +256,7 @@ inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into para
   // show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178, 429, BABY_Z_VAR * 100); // TODO: implement that show_plus_or_minus
 }
 
-/* Start of UI Loop */
+/* Start of UI Loop - This is only called once at the startup of the LCD */
 void HMI_StartFrame(const bool with_update) {
   Screen_DrawMainMenu(!HMI_flag.language_flag);
 
@@ -271,6 +271,8 @@ void HMI_StartFrame(const bool with_update) {
     DWIN_UpdateLCD();
     delay(5);
   }
+
+  // Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition); // TODO: See if needed
 }
 
 void MarlinUI::refresh() {
