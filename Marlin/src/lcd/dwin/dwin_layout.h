@@ -216,6 +216,15 @@ Main Screen Layout
 #define THEME_INFO_LINE3_Y            268
 #define THEME_INFO_ICON_X             26
 
+// Indicators Layout Items
+#define THEME_INDICATOR_HOTEND_X      33
+#define THEME_INDICATOR_HOTEND_Y      382
+#define THEME_INDICATOR_BED_X         178
+#define THEME_INDICATOR_BED_Y         382
+#define THEME_INDICATOR_FEEDRATE_Y    429
+#define THEME_INDICATOR_ZOFFSET_X     178
+#define THEME_INDICATOR_ZOFFSET_Y     429
+
 // Character Widths for Calculations
 #define MBASE(L) (49 + (L)*MLINE)
 constexpr uint16_t MLINE = 53,                          // Menu line height

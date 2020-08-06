@@ -123,28 +123,56 @@ void Screen_DrawInfoMenu(boolean EN) {
   */
 }
 
-void Screen_Indicators_Draw_Hotend_Current(float temp) {
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33, 382, temp);
+// Indicators
+void Screen_Indicators_Draw_Temperature_Hotend(float current, float target) { 
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_HOTEND_X, THEME_INDICATOR_HOTEND_Y, current);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_HOTEND_X + 4 * STAT_CHR_W + 6, 382, target);  
 }
 
-void Screen_Indicators_Draw_Hotend_Target(float temp) {
-  DWIN_Draw_IntValue(true, true, 0,  THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, temp);
+void Screen_Indicators_Update_Temperature_Hotend_Current(float temp) {
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_HOTEND_X, THEME_INDICATOR_HOTEND_Y, temp);
 }
 
-void Screen_Indicators_Draw_Bed_Current(float temp) {
-    DWIN_Draw_IntValue(true, true, 0,  THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178, 382, temp);
+void Screen_Indicators_Update_Temperature_Hotend_Target(float temp) {
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, 33 + 4 * STAT_CHR_W + 6, THEME_INDICATOR_HOTEND_Y, temp);
 }
 
-void Screen_Indicators_Draw_Bed_Target(float temp) {
-  DWIN_Draw_IntValue(true, true, 0,  THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, temp);
+void Screen_Indicators_Draw_Temperature_Bed(float current, float target) { 
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_BED_X, THEME_INDICATOR_BED_Y, current);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_BED_X + 4 * STAT_CHR_W + 6, THEME_INDICATOR_BED_Y, target);
 }
 
-void Screen_Indicators_Draw_Feedrate_Percentage(float rate) {
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, rate);
+void Screen_Indicators_Update_Temperature_Bed_Current(float temp) {
+    DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_BED_X, THEME_INDICATOR_BED_Y, temp);
+}
+
+void Screen_Indicators_Update_Temperature_Bed_Target(float temp) {
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, THEME_INDICATOR_BED_X + 4 * STAT_CHR_W + 6, THEME_INDICATOR_BED_Y, temp);
+}
+
+void Screen_Indicators_Draw_Feedrate_Percentage(int16_t feedratePercentage) { 
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, 33 + 2 * STAT_CHR_W, THEME_INDICATOR_FEEDRATE_Y, feedratePercentage);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + (2 + 3) * STAT_CHR_W + 2, 429, (char*)"%");
+}
+
+void Screen_Indicators_Update_Feedrate_Percentage(float rate) {
+  DWIN_Draw_IntValue(DWIN_LCD_DRAWINT_WITH_BACKGROUND, DWIN_LCD_DRAWINT_WITH_ZEROFILL, DWIN_LCD_DRAWINT_ZEROMODE_LEADING_SPACE, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_DRAWINT_DIGITS, 33 + 2 * STAT_CHR_W, THEME_INDICATOR_FEEDRATE_Y, rate);
+}
+
+void Screen_Indicators_Draw_ZOffset(float value) {
+  if (value < 0) {
+    DWIN_Draw_String(false, true, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_FONT_STAT, THEME_INDICATOR_ZOFFSET_X - 6, THEME_INDICATOR_ZOFFSET_Y, (char*)"-");
+    DWIN_Draw_FloatValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_FONT_STAT, 2, 2, THEME_INDICATOR_ZOFFSET_X, THEME_INDICATOR_ZOFFSET_Y, -value * 100);
+  }
+  else {
+    DWIN_Draw_String(false, true, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_FONT_STAT, THEME_INDICATOR_ZOFFSET_X - 6, THEME_INDICATOR_ZOFFSET_Y, (char*)" ");
+    DWIN_Draw_FloatValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_FONT_STAT, 2, 2, THEME_INDICATOR_ZOFFSET_X, THEME_INDICATOR_ZOFFSET_Y, value * 100);
+  }
 }
 
 // TODO: These moved from dwin.cpp, not updated yet!
-
 inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
   DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
 }
@@ -174,32 +202,10 @@ inline void MenuItem_Draw_Back(const bool is_sel=true) {
   if (is_sel) Draw_Menu_Cursor(0);
 }
 
-
 inline void Draw_Title_Bar_Background(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_RIGHTMOST_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT);
 }
 
 inline void Draw_Indicator_Frame_Background(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
-}
-
-void Draw_Indicator_Temperature_Hotend(hotend_info_t hotendInfo) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33, 382, hotendInfo.celsius);
-  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, hotendInfo.target);  
-}
-
-void Draw_Indicator_Temperature_Bed(bed_info_t bedInfo) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178, 382, bedInfo.celsius);
-  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, bedInfo.target);
-}
-
- void Draw_Indicator_Feedrate(int16_t feedratePercentage) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, feedratePercentage);
-  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + (2 + 3) * STAT_CHR_W + 2, 429, (char*)"%");
-}
-
-void Draw_Indicator_ZOffset(float zOffset) { // TODO: Work the locations into parameters
-  // show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178, 429, BABY_Z_VAR * 100); // TODO: implement that show_plus_or_minus
 }

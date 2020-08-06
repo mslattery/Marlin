@@ -45,7 +45,7 @@ int currentScreenIndex    = 0; // Used to store Screen location in menu tree
 int currentCursorPosition = 0; // Used to store Cursor Postion on Screen
 float last_temp_hotend_target = 0, last_temp_bed_target = 0;
 float last_temp_hotend_current = 0, last_temp_bed_current = 0;
-uint16_t feedrate_last = 0; // Feedspeed
+uint16_t last_feedrate = 0; // Feedspeed
 float last_zoffset = 0; // Last zOffset
 
 void HMI_Init(void) { }
@@ -181,24 +181,28 @@ void update_variable(void) {
   float feedrate_current = feedrate_percentage; // TODO: This is hardcoded now, must come from somewhere
     
   if (hotend_current != last_temp_hotend_current) {
-    Screen_Indicators_Draw_Hotend_Current(hotend_current);
+    Screen_Indicators_Update_Temperature_Hotend_Current(hotend_current);
     last_temp_hotend_current = hotend_current;
   }
   if (hotend_target != last_temp_hotend_target) {
-    Screen_Indicators_Draw_Hotend_Target(hotend_target);
+    Screen_Indicators_Update_Temperature_Hotend_Target(hotend_target);
     last_temp_hotend_target = hotend_target;
   }
   if (bed_current != last_temp_bed_current) {
-    Screen_Indicators_Draw_Bed_Current(bed_current);
+    Screen_Indicators_Update_Temperature_Bed_Current(bed_current);
     last_temp_bed_current = bed_current;
   }
   if (bed_target != last_temp_bed_target) {
-    Screen_Indicators_Draw_Bed_Target(bed_target);
+    Screen_Indicators_Update_Temperature_Bed_Target(bed_target);
     last_temp_bed_target = bed_target;
   }
-  if (feedrate_current != feedrate_last) {
-    Screen_Indicators_Draw_Feedrate_Percentage(feedrate_current);
-    feedrate_last = feedrate_current;
+  if (feedrate_current != last_feedrate) {
+    Screen_Indicators_Update_Feedrate_Percentage(feedrate_current);
+    last_feedrate = feedrate_current;
+  }
+  if (zprobe_zoffset != last_zoffset) {
+    Screen_Indicators_Draw_ZOffset(zprobe_zoffset);
+    last_zoffset = zprobe_zoffset;
   }
   #if HAS_LEVELING
     if (last_probe_zoffset != probe.offset.z) {
@@ -262,10 +266,10 @@ inline void Draw_Indicator_Frame_Background(void) {
 inline void DrawIndicators() {
   // Draw indicators
   Draw_Indicator_Frame_Background();
-  Draw_Indicator_Temperature_Hotend(thermalManager.temp_hotend[0]);
-  Draw_Indicator_Temperature_Bed(thermalManager.temp_bed);
-  Draw_Indicator_Feedrate(feedrate_percentage);
-  Draw_Indicator_ZOffset(0.00);
+  Screen_Indicators_Draw_Temperature_Hotend(thermalManager.temp_hotend[0].celsius, thermalManager.temp_hotend[0].target);
+  Screen_Indicators_Draw_Temperature_Bed(thermalManager.temp_bed.celsius, thermalManager.temp_bed.target);
+  Screen_Indicators_Draw_Feedrate_Percentage(feedrate_percentage);
+  Screen_Indicators_Draw_ZOffset(0.00);
 }
 
 /* Start of UI Loop - This is only called once at the startup of the LCD */
