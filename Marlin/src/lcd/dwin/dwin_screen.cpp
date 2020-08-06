@@ -51,7 +51,7 @@ void Screen_DrawMainMenu(boolean EN) { // Only use when changing to Main Menu, u
 void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Updates based on cursor with DWIN_Frame_AreaCopy(1, 1, 447, 271 - 243, 479 - 19, 58, 201);
 
   Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
-  // char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+  char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
 
   if ((currentCursorPosition==3) && (!HAS_LEVELING)) {  // If no bed leveling then position 3 is really position 4 (INFO).
       currentCursorPosition = 4; 
@@ -99,7 +99,7 @@ void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Upd
 }
 
 // Draws Info screen
-void Screen_DrawInfoMenu(boolean EN) {
+void Screen_DrawInfoMenu(boolean EN) { 
   Draw_MainWindowBackground();
   if (EN) {
     Draw_TitleText(GET_TEXT_F(MSG_INFO_SCREEN));
@@ -107,13 +107,99 @@ void Screen_DrawInfoMenu(boolean EN) {
     DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Info"  // TODO: Figure out how CN works.
   } 
 
+  #define TEXT "TESTING..."
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, DWIN_WIDTH/2, 50, (char*)TEXT);
+  
+  /*
   //MenuItem_Draw_Back(); // TODO: Draw Back Item
 
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / 2, 122, (char*)MACHINE_SIZE);
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / 2, 195, (char*)SHORT_BUILD_VERSION);
-  DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / 2, 268, (char*)CORP_WEBSITE_C);
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / THEME_INFO_LINE1_X, THEME_INFO_LINE1_Y, (char*)MACHINE_SIZE);
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / THEME_INFO_LINE2_X, THEME_INFO_LINE2_Y, (char*)SHORT_BUILD_VERSION);
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / THEME_INFO_LINE3_X, THEME_INFO_LINE3_Y, (char*)CORP_WEBSITE_C);
   LOOP_L_N(i, 3) {
-    DWIN_ICON_Show(ICON, ICON_PrintSize + i, 26, 99 + i * 73);
+    DWIN_ICON_Show(ICON, ICON_PrintSize + i, THEME_INFO_ICON_X, 99 + i * 73);
     DWIN_Draw_Line(THEME_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
   }
+  */
+}
+
+void Screen_Indicators_Draw_Hotend_Current(float temp) {
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33, 382, temp);
+}
+
+void Screen_Indicators_Draw_Hotend_Target(float temp) {
+  DWIN_Draw_IntValue(true, true, 0,  THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, temp);
+}
+
+void Screen_Indicators_Draw_Bed_Current(float temp) {
+    DWIN_Draw_IntValue(true, true, 0,  THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178, 382, temp);
+}
+
+void Screen_Indicators_Draw_Bed_Target(float temp) {
+  DWIN_Draw_IntValue(true, true, 0,  THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, temp);
+}
+
+void Screen_Indicators_Draw_Feedrate_Percentage(float rate) {
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, rate);
+}
+
+// TODO: These moved from dwin.cpp, not updated yet!
+
+inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
+  DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
+}
+
+inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
+  if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
+  if (icon) Draw_Menu_Icon(line, icon);
+  DWIN_Draw_Line(THEME_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
+}
+
+// The "Back" label is always on the first line
+inline void Draw_Back_Label(boolean EN) {
+  if (!EN)
+    DWIN_Frame_AreaCopy(1, 129, 72, 271 - 115, 479 - 395, LBLX, MBASE(0));
+  else
+    DWIN_Frame_AreaCopy(1, 226, 179, 271 - 15, 479 - 290, LBLX, MBASE(0));
+}
+
+inline void Draw_Menu_Cursor(const uint8_t line) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
+}
+
+// Draw "Back" line at the top
+inline void MenuItem_Draw_Back(const bool is_sel=true) {
+  Draw_Menu_Line(0, ICON_Back);
+  Draw_Back_Label(true);
+  if (is_sel) Draw_Menu_Cursor(0);
+}
+
+
+inline void Draw_Title_Bar_Background(void) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_RIGHTMOST_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT);
+}
+
+inline void Draw_Indicator_Frame_Background(void) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
+}
+
+void Draw_Indicator_Temperature_Hotend(hotend_info_t hotendInfo) { // TODO: Work the locations into parameters
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33, 382, hotendInfo.celsius);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, hotendInfo.target);  
+}
+
+void Draw_Indicator_Temperature_Bed(bed_info_t bedInfo) { // TODO: Work the locations into parameters
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178, 382, bedInfo.celsius);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, bedInfo.target);
+}
+
+ void Draw_Indicator_Feedrate(int16_t feedratePercentage) { // TODO: Work the locations into parameters
+  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, feedratePercentage);
+  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + (2 + 3) * STAT_CHR_W + 2, 429, (char*)"%");
+}
+
+void Draw_Indicator_ZOffset(float zOffset) { // TODO: Work the locations into parameters
+  // show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178, 429, BABY_Z_VAR * 100); // TODO: implement that show_plus_or_minus
 }

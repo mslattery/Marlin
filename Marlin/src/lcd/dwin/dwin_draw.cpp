@@ -30,6 +30,9 @@
  * 
 */
 
+/* 
+  Clears TitleBar and DynamicArea by drawing Backgrounds 
+*/
 void Draw_MainWindowBackground(void){
   Draw_TitleBar_Background();
   Draw_DynamicArea_Background();

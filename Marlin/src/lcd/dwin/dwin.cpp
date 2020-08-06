@@ -21,9 +21,6 @@
  */
 
 #include "../../inc/MarlinConfigPre.h"
-#include <stdio.h>
-#include <string.h>
-
 #if ENABLED(DWIN_CREALITY_LCD)
 /**
  * dwin.cpp
@@ -35,7 +32,9 @@
 #include "dwin.h"
 
 #define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
-#define ENCODER_WAIT    20
+#define ENCODER_WAIT    50
+
+#define DWIN_SCROLL_UPDATE_INTERVAL 2000
 
 // Initialize Values
 HMI_Flag HMI_flag{0};
@@ -44,20 +43,10 @@ float zprobe_zoffset      = 0;
 millis_t Encoder_ms       = 0; // Encoder related timing
 int currentScreenIndex    = 0; // Used to store Screen location in menu tree
 int currentCursorPosition = 0; // Used to store Cursor Postion on Screen
-
-/*
-constexpr uint16_t TROWS = 6, MROWS = TROWS - 1,        // Total rows, and other-than-Back
-                   TITLE_HEIGHT = 30,                   // Title bar height. SLATS - I moved to LAYOUT_TITLE_BAR_HEIGHT
-                   MENU_CHR_W = 8, STAT_CHR_W = 10;
-*/
-
-/*constexpr uint16_t MLINE = 53,                          // Menu line height
-                   LBLX = 60,                           // Menu item label X
-                   MENU_CHR_W = 8,                      // Menu Char Width
-                   STAT_CHR_W = 10;                     // TODO: This is used in layout need to understand, STATIC CHAR WIDTH!
-*/
-
-//#define MBASE(L) (49 + (L)*MLINE)
+float last_temp_hotend_target = 0, last_temp_bed_target = 0;
+float last_temp_hotend_current = 0, last_temp_bed_current = 0;
+uint16_t feedrate_last = 0; // Feedspeed
+float last_zoffset = 0; // Last zOffset
 
 void HMI_Init(void) { }
 
@@ -69,52 +58,25 @@ inline ENCODER_DiffState get_encoder_state() {
   return state;
 }
 
-inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
-  DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
-}
-
-inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
-  if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
-  if (icon) Draw_Menu_Icon(line, icon);
-  DWIN_Draw_Line(THEME_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
-}
-
-// The "Back" label is always on the first line
-inline void Draw_Back_Label(void) {
-  if (HMI_flag.language_flag)
-    DWIN_Frame_AreaCopy(1, 129, 72, 271 - 115, 479 - 395, LBLX, MBASE(0));
-  else
-    DWIN_Frame_AreaCopy(1, 226, 179, 271 - 15, 479 - 290, LBLX, MBASE(0));
-}
-
-inline void Draw_Menu_Cursor(const uint8_t line) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
-}
-
-// Draw "Back" line at the top
-inline void MenuItem_Draw_Back(const bool is_sel=true) {
-  Draw_Menu_Line(0, ICON_Back);
-  Draw_Back_Label();
-  if (is_sel) Draw_Menu_Cursor(0);
-}
-
-void ShowMainMenu(void) {
+void ShowMainMenuScreen(void) {
   currentScreenIndex = MainMenuScreen;
   Screen_DrawMainMenu(!HMI_flag.language_flag);
 }
 
-void ShowInfoMenu(void) {
-  currentScreenIndex = InfoScreen;
-  Screen_DrawInfoMenu(!HMI_flag.language_flag);
+void ShowInfoScreen(void) {
+        currentScreenIndex = InfoScreen;
+        currentCursorPosition = 0; // reset for new screen
+        Screen_DrawInfoMenu(!HMI_flag.language_flag);
 }
 
 void HMI_MainMenu(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
   if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (currentCursorPosition >= 3) { currentCursorPosition = 0; } else {currentCursorPosition += 1; } //  >= takes care of Leveling (3) vs Info (4)
+    if (currentCursorPosition >= 3) { currentCursorPosition = 0; } else { currentCursorPosition += 1; } //  >= takes care of Leveling (3) vs Info (4)
     //Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
-    //char str[80]; sprintf(str, "Rotary CW %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+    //char str[80]; sprintf(str, "Rotary CW %i", currentCursorPosition); 
+    //Draw_TitleText(str); // ONLY FOR TESTING
     Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }  
   else if (encoder_diffState == ENCODER_DIFF_CCW) {     
@@ -124,19 +86,24 @@ void HMI_MainMenu(void) {
     Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition);
   }
   else if (encoder_diffState == ENCODER_DIFF_ENTER) {  
+    //Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
+    //char str[80]; sprintf(str, "Rotary Enter %i", currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
     switch (currentCursorPosition)
     {
+    case 0: // Print
+      ShowInfoScreen(); // TEMP TESTING
+      break;     
     case 1: // Prepare
-      currentScreenIndex = Prepare;
+      ShowInfoScreen(); // TEMP TESTING
       break;
     case 2: // Control
-      currentScreenIndex = Control;
+      ShowInfoScreen(); // TEMP TESTING
       break;
     case 3: // Leveling & Info
       if (HAS_LEVELING) {
-        currentScreenIndex = Leveling;
+        ShowInfoScreen(); // TEMP TESTING
       } else {
-        ShowInfoMenu();
+        ShowInfoScreen();
       }
       break;
     default:
@@ -151,17 +118,15 @@ void HMI_Info(void) {
   ENCODER_DiffState encoder_diffState = get_encoder_state();
   if (encoder_diffState == ENCODER_DIFF_NO) return;
   if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    ShowMainMenu();
-  } else {
-    ShowInfoMenu();
+    ShowMainMenuScreen();
   }
-  DWIN_UpdateLCD();
+  //DWIN_UpdateLCD();
 }
 
 void DWIN_HandleScreen(void) {
 
   Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
-  char str[80]; sprintf(str, "HS Screen:%i Cursor:%i", currentScreenIndex, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+  //char str[80]; sprintf(str, "HS Screen:%i Cursor:%i", currentScreenIndex, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
 
   switch (currentScreenIndex) {
     case MainMenuScreen:              HMI_MainMenu(); break;
@@ -207,8 +172,59 @@ void DWIN_HandleScreen(void) {
   }
 }
 
+void update_variable(void) {
+  /* Bottom temperature update */
+  float hotend_current = thermalManager.temp_hotend[0].celsius;
+  float hotend_target = thermalManager.temp_hotend[0].target;
+  float bed_current = thermalManager.temp_bed.celsius;
+  float bed_target = thermalManager.temp_bed.target;
+  float feedrate_current = feedrate_percentage; // TODO: This is hardcoded now, must come from somewhere
+    
+  if (hotend_current != last_temp_hotend_current) {
+    Screen_Indicators_Draw_Hotend_Current(hotend_current);
+    last_temp_hotend_current = hotend_current;
+  }
+  if (hotend_target != last_temp_hotend_target) {
+    Screen_Indicators_Draw_Hotend_Target(hotend_target);
+    last_temp_hotend_target = hotend_target;
+  }
+  if (bed_current != last_temp_bed_current) {
+    Screen_Indicators_Draw_Bed_Current(bed_current);
+    last_temp_bed_current = bed_current;
+  }
+  if (bed_target != last_temp_bed_target) {
+    Screen_Indicators_Draw_Bed_Target(bed_target);
+    last_temp_bed_target = bed_target;
+  }
+  if (feedrate_current != feedrate_last) {
+    Screen_Indicators_Draw_Feedrate_Percentage(feedrate_current);
+    feedrate_last = feedrate_current;
+  }
+  #if HAS_LEVELING
+    if (last_probe_zoffset != probe.offset.z) {
+      //show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178 + STAT_CHR_W, 429, probe.offset.z * 100);
+      last_probe_zoffset = probe.offset.z;
+    }
+  #else
+    if (last_zoffset != zprobe_zoffset) {
+      //show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178 + STAT_CHR_W, 429, zprobe_zoffset * 100);
+      last_zoffset = zprobe_zoffset;
+    }
+  #endif
+}
+
+void EachMomentUpdate(void) {
+  static millis_t next_rts_update_ms = 0;
+  const millis_t ms = millis();
+  if (PENDING(ms, next_rts_update_ms)) return;
+  next_rts_update_ms = ms + DWIN_SCROLL_UPDATE_INTERVAL;
+  update_variable();
+  DWIN_UpdateLCD();
+}
+
 // Main UI Loop - Continually called after startup
 void DWIN_Update(void) {
+  EachMomentUpdate();    // Status Updates
   //HMI_SDCardUpdate();   // SD card update
   DWIN_HandleScreen();  // Handle current screen state
 }
@@ -243,43 +259,23 @@ inline void Draw_Indicator_Frame_Background(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
 }
 
-inline void Draw_Indicator_Temperature_Hotend(void) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33, 382, thermalManager.temp_hotend[0].celsius);
-  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_hotend[0].target);  
-}
-
-inline void Draw_Indicator_Temperature_Bed(void) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178, 382, thermalManager.temp_bed.celsius);
-  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 178 + 3 * STAT_CHR_W + 5, 383, (char*)"/");
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 178 + 4 * STAT_CHR_W + 6, 382, thermalManager.temp_bed.target);
-}
-
-inline void Draw_Indicator_Feedrate(void) { // TODO: Work the locations into parameters
-  DWIN_Draw_IntValue(true, true, 0, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 3, 33 + 2 * STAT_CHR_W, 429, feedrate_percentage);
-  DWIN_Draw_String(false, false, THEME_FONT_STAT, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, 33 + (2 + 3) * STAT_CHR_W + 2, 429, (char*)"%");
-}
-
-inline void Draw_Indicator_ZOffset(void) { // TODO: Work the locations into parameters
-  // show_plus_or_minus(STAT_FONT, Background_black, 2, 2, 178, 429, BABY_Z_VAR * 100); // TODO: implement that show_plus_or_minus
+inline void DrawIndicators() {
+  // Draw indicators
+  Draw_Indicator_Frame_Background();
+  Draw_Indicator_Temperature_Hotend(thermalManager.temp_hotend[0]);
+  Draw_Indicator_Temperature_Bed(thermalManager.temp_bed);
+  Draw_Indicator_Feedrate(feedrate_percentage);
+  Draw_Indicator_ZOffset(0.00);
 }
 
 /* Start of UI Loop - This is only called once at the startup of the LCD */
 void HMI_StartFrame(const bool with_update) {
   Screen_DrawMainMenu(!HMI_flag.language_flag);
-
-  // Draw indicators
-  Draw_Indicator_Frame_Background();
-  Draw_Indicator_Temperature_Hotend();
-  Draw_Indicator_Temperature_Bed();
-  Draw_Indicator_Feedrate();
-  Draw_Indicator_ZOffset();
-
+  DrawIndicators();
   if (with_update) {
     DWIN_UpdateLCD();
     delay(5);
   }
-
   // Screen_MainMenu_Update(!HMI_flag.language_flag, currentCursorPosition); // TODO: See if needed
 }
 

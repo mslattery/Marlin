@@ -29,6 +29,7 @@
  * 
 */
 #include "dwin_draw.h"
+#include "./src/module/temperature.h"
 #include "../../inc/MarlinConfigPre.h" // for HAS_LEVELING
 
 #ifndef HAS_LEVELING  // If bed leveling not defined
@@ -56,3 +57,12 @@ enum Cursor_MainScreen {
 void Screen_DrawMainMenu(boolean EN);
 void Screen_MainMenu_Update(boolean EN, int currentCursorPosition);
 void Screen_DrawInfoMenu(boolean EN);
+void Draw_Indicator_Temperature_Hotend(hotend_info_t hotendInfo);
+void Draw_Indicator_Temperature_Bed(bed_info_t bedInfo);
+void Draw_Indicator_Feedrate(int16_t feedratePercentage);
+void Draw_Indicator_ZOffset(float zOffset);
+void Screen_Indicators_Draw_Hotend_Current(float temp);
+void Screen_Indicators_Draw_Hotend_Target(float temp);
+void Screen_Indicators_Draw_Bed_Current(float temp);
+void Screen_Indicators_Draw_Bed_Target(float temp);
+void Screen_Indicators_Draw_Feedrate_Percentage(float rate);

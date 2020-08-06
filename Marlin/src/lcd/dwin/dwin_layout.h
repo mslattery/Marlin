@@ -153,27 +153,27 @@ Main Screen Layout
 */
 
 // https://demmel.com/ilcd/help/16BitColorValues.htm
-#define DWIN_COLOR_WHITE             0xFFFF
-#define DWIN_COLOR_MAGENTA           0xF81F
-#define DWIN_COLOR_BLUE              0x001F
-#define DWIN_COLOR_GREEN             0x07E0
+#define DWIN_COLOR_WHITE              0xFFFF
+#define DWIN_COLOR_MAGENTA            0xF81F
+#define DWIN_COLOR_BLUE               0x001F
+#define DWIN_COLOR_GREEN              0x07E0
 
 // Font Sizes
-#define font6x12  0x00
-#define font8x16  0x01
-#define font10x20 0x02
-#define font12x24 0x03
-#define font14x28 0x04
-#define font16x32 0x05
-#define font20x40 0x06
-#define font24x48 0x07
-#define font28x56 0x08
-#define font32x64 0x09
+#define font6x12                      0x00
+#define font8x16                      0x01
+#define font10x20                     0x02
+#define font12x24                     0x03
+#define font14x28                     0x04
+#define font16x32                     0x05
+#define font20x40                     0x06
+#define font24x48                     0x07
+#define font28x56                     0x08
+#define font32x64                     0x09
 
 // Theme Fonts
-#define THEME_FONT_MENU   font8x16
-#define THEME_FONT_STAT   font10x20
-#define THEME_FONT_HEADER font10x20
+#define THEME_FONT_MENU               font8x16
+#define THEME_FONT_STAT               font10x20
+#define THEME_FONT_HEADER             font10x20
 
 // Theme Colors
 #define THEME_COLOR_TITLE             DWIN_COLOR_WHITE
@@ -187,23 +187,34 @@ Main Screen Layout
 #define THEME_COLOR_BARFILL           0x10E4  // fill color of progress bar
 #define THEME_COLOR_SELECT            0x33BB  // selected color
 
-// Theme Icons
-#define THEME_LOGO_X 71
-#define THEME_LOGO_Y 52
-#define THEME_ICON_PRINT_X 17
-#define THEME_ICON_PRINT_Y 130
-#define THEME_ICON_PREPARE_X 145
-#define THEME_ICON_PREPARE_Y 130
-#define THEME_ICON_CONTROL_X 17 
-#define THEME_ICON_CONTROL_Y 246
-#define THEME_ICON_INFO_X 145
-#define THEME_ICON_INFO_Y 246
-#define THEME_ICON_LEVELING_X 145 // NOTE Same Location as INFO, so only one can be shown at a time
-#define THEME_ICON_LEVELING_Y 246
+// Main Screen Items Icons
+#define THEME_LOGO_X                  71
+#define THEME_LOGO_Y                  52
+#define THEME_ICON_PRINT_X            17
+#define THEME_ICON_PRINT_Y            130
+#define THEME_ICON_PREPARE_X          145
+#define THEME_ICON_PREPARE_Y          130
+#define THEME_ICON_CONTROL_X          17 
+#define THEME_ICON_CONTROL_Y          246
+#define THEME_ICON_INFO_X             145
+#define THEME_ICON_INFO_Y             246
+#define THEME_ICON_LEVELING_X         145 // NOTE Same Location as INFO, so only one can be shown at a time
+#define THEME_ICON_LEVELING_Y         246
 
 // Theme Text Locations
-#define THEME_TITLE_X 14
-#define THEME_TITLE_Y 4
+#define THEME_TITLE_X                 14
+#define THEME_TITLE_Y                 4
+
+// INFO Screen Layout Items
+#define THEME_INFO_FONT               font8x16
+#define THEME_INFO_TEXT_COLOR         DWIN_COLOR_WHITE
+#define THEME_INFO_LINE1_X            2
+#define THEME_INFO_LINE1_Y            122
+#define THEME_INFO_LINE2_X            2
+#define THEME_INFO_LINE2_Y            195
+#define THEME_INFO_LINE3_X            2
+#define THEME_INFO_LINE3_Y            268
+#define THEME_INFO_ICON_X             26
 
 // Character Widths for Calculations
 #define MBASE(L) (49 + (L)*MLINE)
