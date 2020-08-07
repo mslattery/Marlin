@@ -120,7 +120,7 @@ void HMI_Info(void) {
   if (encoder_diffState == ENCODER_DIFF_ENTER) {
     ShowMainMenuScreen();
   }
-  //DWIN_UpdateLCD();
+  DWIN_UpdateLCD();
 }
 
 void DWIN_HandleScreen(void) {
