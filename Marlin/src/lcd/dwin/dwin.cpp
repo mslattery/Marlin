@@ -266,6 +266,7 @@ inline void Draw_Indicator_Frame_Background(void) {
 inline void DrawIndicators() {
   // Draw indicators
   Draw_Indicator_Frame_Background();
+  Screen_Indicators_Draw_Icons();
   Screen_Indicators_Draw_Temperature_Hotend(thermalManager.temp_hotend[0].celsius, thermalManager.temp_hotend[0].target);
   Screen_Indicators_Draw_Temperature_Bed(thermalManager.temp_bed.celsius, thermalManager.temp_bed.target);
   Screen_Indicators_Draw_Feedrate_Percentage(feedrate_percentage);

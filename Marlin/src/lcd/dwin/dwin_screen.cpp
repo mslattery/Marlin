@@ -209,3 +209,10 @@ inline void Draw_Title_Bar_Background(void) {
 inline void Draw_Indicator_Frame_Background(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLACK, DWIN_LCD_COORD_LEFTMOST_X,  DWIN_HEIGHT-120,  DWIN_LCD_COORD_RIGHTMOST_X, DWIN_HEIGHT-1); // TODO: 120 pixels reserved needs to be addressed
 }
+
+void Screen_Indicators_Draw_Icons(void) {
+  DWIN_ICON_Show(ICON, ICON_HotendTemp, THEME_ICON_HOTEND_X, THEME_ICON_HOTEND_Y);
+  DWIN_ICON_Show(ICON, ICON_BedTemp, THEME_ICON_BED_X, THEME_ICON_BED_Y);
+  DWIN_ICON_Show(ICON, ICON_Speed, THEME_ICON_FEEDRATE_X, THEME_ICON_FEEDRATE_Y);
+  DWIN_ICON_Show(ICON, ICON_Zoffset, THEME_ICON_ZOFFSET_X, THEME_ICON_ZOFFSET_Y);
+}

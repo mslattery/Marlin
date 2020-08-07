@@ -217,6 +217,15 @@ Main Screen Layout
 #define THEME_INFO_ICON_X             26
 
 // Indicators Layout Items
+#define THEME_ICON_HOTEND_X           13
+#define THEME_ICON_HOTEND_Y           381
+#define THEME_ICON_BED_X              158
+#define THEME_ICON_BED_Y              381
+#define THEME_ICON_FEEDRATE_X         13
+#define THEME_ICON_FEEDRATE_Y         429
+#define THEME_ICON_ZOFFSET_X          158
+#define THEME_ICON_ZOFFSET_Y          428
+
 #define THEME_INDICATOR_HOTEND_X      33
 #define THEME_INDICATOR_HOTEND_Y      382
 #define THEME_INDICATOR_BED_X         178

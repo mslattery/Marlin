@@ -67,3 +67,4 @@ void Screen_Indicators_Update_Temperature_Bed_Target(float temp);
 void Screen_Indicators_Draw_Feedrate_Percentage(int16_t feedratePercentage);
 void Screen_Indicators_Update_Feedrate_Percentage(float rate);
 void Screen_Indicators_Draw_ZOffset(float value);
+void Screen_Indicators_Draw_Icons(void);
