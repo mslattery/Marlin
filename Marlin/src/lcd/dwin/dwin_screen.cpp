@@ -98,29 +98,66 @@ void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Upd
   }
 }
 
+/*
+// Back label menu item related
+inline void Draw_Back_Label(boolean EN) {
+  if (!EN)
+    DWIN_Frame_AreaCopy(1, 129, 72, 271 - 115, 479 - 395, LBLX, MBASE(0));
+  else
+    //DWIN_Frame_AreaCopy(1, 226, 179, 271 - 15, 479 - 290, LBLX, MBASE(0));
+    DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, LBLX, MBASE(0), (char*)GET_TEXT_F(MSG_BUTTON_BACK));
+}
+*/
+
+inline void Draw_Menu_Cursor(const uint8_t line) {
+  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
+}
+
+// Draw Menu Icon on specific line
+//  line: Menu line number
+//  icon: Icon ID to draw
+//inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
+//  DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
+//}
+
+// Draw Menu Line on specific line, icon, and text
+//   line : Line # based on menu spacing
+//   icon : Icon ID to draw
+//   label: Text to include, can be empty
+inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
+  if (label) {DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label); }
+  if (icon) { DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE); }  // Draw_Menu_Icon(line, icon);
+  DWIN_Draw_Line(THEME_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
+}
+
+// Draw "Back" line at the top
+inline void Draw_MenuItem_Back(const bool is_sel=true) {
+  Draw_Menu_Line(THEME_MENU_LINE_BACK, ICON_Back, (char*)GET_TEXT_F(MSG_BUTTON_BACK));
+  //Draw_Back_Label(true);
+  if (is_sel) Draw_Menu_Cursor(0);
+}
+
 // Draws Info screen
-void Screen_DrawInfoMenu(boolean EN) { 
+void Screen_DrawInfoMenu(boolean EN) { // TODO: Review this section
   Draw_MainWindowBackground();
   if (EN) {
     Draw_TitleText(GET_TEXT_F(MSG_INFO_SCREEN));
   } else {
     DWIN_Frame_AreaCopy(1, 2, 2, 271 - 244, 479 - 465, 14, 9); // "Info"  // TODO: Figure out how CN works.
   } 
-
-  #define TEXT "TESTING..."
-  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, DWIN_WIDTH/2, 50, (char*)TEXT);
-  
-  /*
-  //MenuItem_Draw_Back(); // TODO: Draw Back Item
-
+  Draw_MenuItem_Back();
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen("Size") * MENU_CHR_W) / THEME_INFO_LINE1_X, THEME_INFO_LINE1_Y - 20, (char*)"Size");
   DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(MACHINE_SIZE) * MENU_CHR_W) / THEME_INFO_LINE1_X, THEME_INFO_LINE1_Y, (char*)MACHINE_SIZE);
+
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen("Firmware version") * MENU_CHR_W) / THEME_INFO_LINE2_X, THEME_INFO_LINE2_Y - 20, (char*)"Firmware version");
   DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(SHORT_BUILD_VERSION) * MENU_CHR_W) / THEME_INFO_LINE2_X, THEME_INFO_LINE2_Y, (char*)SHORT_BUILD_VERSION);
+
+  DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen("Contact details") * MENU_CHR_W) / THEME_INFO_LINE3_X, THEME_INFO_LINE3_Y - 20, (char*)"Contact Details");
   DWIN_Draw_String(false, false, THEME_INFO_FONT, THEME_INFO_TEXT_COLOR, THEME_COLOR_BACKGROUND_BLACK, (DWIN_WIDTH - strlen(CORP_WEBSITE_C) * MENU_CHR_W) / THEME_INFO_LINE3_X, THEME_INFO_LINE3_Y, (char*)CORP_WEBSITE_C);
   LOOP_L_N(i, 3) {
     DWIN_ICON_Show(ICON, ICON_PrintSize + i, THEME_INFO_ICON_X, 99 + i * 73);
     DWIN_Draw_Line(THEME_COLOR_LINE, 16, MBASE(2) + i * 73, 256, 156 + i * 73);
   }
-  */
 }
 
 // Indicators
@@ -173,34 +210,6 @@ void Screen_Indicators_Draw_ZOffset(float value) {
 }
 
 // TODO: These moved from dwin.cpp, not updated yet!
-inline void Draw_Menu_Icon(const uint8_t line, const uint8_t icon) {
-  DWIN_ICON_Show(ICON, icon, 26, 46 + line * MLINE);
-}
-
-inline void Draw_Menu_Line(const uint8_t line, const uint8_t icon=0, const char * const label=nullptr) {
-  if (label) DWIN_Draw_String(false, false, font8x16, DWIN_COLOR_WHITE, THEME_COLOR_BACKGROUND_BLACK, LBLX, 48 + line * MLINE, (char*)label);
-  if (icon) Draw_Menu_Icon(line, icon);
-  DWIN_Draw_Line(THEME_COLOR_LINE, 16, 29 + (line + 1) * MLINE, 256, 30 + (line + 1) * MLINE);
-}
-
-// The "Back" label is always on the first line
-inline void Draw_Back_Label(boolean EN) {
-  if (!EN)
-    DWIN_Frame_AreaCopy(1, 129, 72, 271 - 115, 479 - 395, LBLX, MBASE(0));
-  else
-    DWIN_Frame_AreaCopy(1, 226, 179, 271 - 15, 479 - 290, LBLX, MBASE(0));
-}
-
-inline void Draw_Menu_Cursor(const uint8_t line) {
-  DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_CURSOR, 0, 31 + line * MLINE, 14, 31 + (line + 1) * MLINE - 2);
-}
-
-// Draw "Back" line at the top
-inline void MenuItem_Draw_Back(const bool is_sel=true) {
-  Draw_Menu_Line(0, ICON_Back);
-  Draw_Back_Label(true);
-  if (is_sel) Draw_Menu_Cursor(0);
-}
 
 inline void Draw_Title_Bar_Background(void) {
   DWIN_Draw_Rectangle(DWIN_DRAW_MODE_FILL, THEME_COLOR_BACKGROUND_BLUE, DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_TOPLEFT_X,  DWIN_LCD_COORD_RIGHTMOST_X,  DWIN_LAYOUT_TITLE_BAR_HEIGHT);

@@ -234,6 +234,8 @@ Main Screen Layout
 #define THEME_INDICATOR_ZOFFSET_X     178
 #define THEME_INDICATOR_ZOFFSET_Y     429
 
+#define THEME_MENU_LINE_BACK          0
+
 // Character Widths for Calculations
 #define MBASE(L) (49 + (L)*MLINE)
 constexpr uint16_t MLINE = 53,                          // Menu line height
