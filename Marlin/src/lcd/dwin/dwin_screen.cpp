@@ -50,8 +50,8 @@ void Screen_DrawMainMenu(boolean EN) { // Only use when changing to Main Menu, u
 // Updates MainMenu screen
 void Screen_MainMenu_Update(boolean EN, int currentCursorPosition) { //TODO: Updates based on cursor with DWIN_Frame_AreaCopy(1, 1, 447, 271 - 243, 479 - 19, 58, 201);
 
-  Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
-  char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
+  //Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
+  //char str[80]; sprintf(str, "Update %i, %i", EN, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
 
   if ((currentCursorPosition==3) && (!HAS_LEVELING)) {  // If no bed leveling then position 3 is really position 4 (INFO).
       currentCursorPosition = 4; 

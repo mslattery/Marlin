@@ -32,7 +32,7 @@
 #include "dwin.h"
 
 #define BABY_Z_VAR TERN(HAS_LEVELING, probe.offset.z, zprobe_zoffset)
-#define ENCODER_WAIT    50
+#define ENCODER_WAIT    20
 
 #define DWIN_SCROLL_UPDATE_INTERVAL 2000
 
@@ -125,7 +125,7 @@ void HMI_Info(void) {
 
 void DWIN_HandleScreen(void) {
 
-  Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
+  //Draw_TitleBar_Background();  // Clear the text ONLY FOR TESTING
   //char str[80]; sprintf(str, "HS Screen:%i Cursor:%i", currentScreenIndex, currentCursorPosition); Draw_TitleText(str); // ONLY FOR TESTING
 
   switch (currentScreenIndex) {
@@ -264,13 +264,12 @@ inline void Draw_Indicator_Frame_Background(void) {
 }
 
 inline void DrawIndicators() {
-  // Draw indicators
   Draw_Indicator_Frame_Background();
   Screen_Indicators_Draw_Icons();
   Screen_Indicators_Draw_Temperature_Hotend(thermalManager.temp_hotend[0].celsius, thermalManager.temp_hotend[0].target);
   Screen_Indicators_Draw_Temperature_Bed(thermalManager.temp_bed.celsius, thermalManager.temp_bed.target);
   Screen_Indicators_Draw_Feedrate_Percentage(feedrate_percentage);
-  Screen_Indicators_Draw_ZOffset(0.00);
+  Screen_Indicators_Draw_ZOffset(0.00); // TODO: Get actual offset
 }
 
 /* Start of UI Loop - This is only called once at the startup of the LCD */
