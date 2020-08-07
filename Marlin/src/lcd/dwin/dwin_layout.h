@@ -172,7 +172,9 @@ Main Screen Layout
 
 // Theme Fonts
 #define THEME_FONT_MENU               font8x16
+#define THEME_FONT_MENU_CHAR_WIDTH    8
 #define THEME_FONT_STAT               font10x20
+#define THEME_FONT_STAT_CHAR_WIDTH    10
 #define THEME_FONT_HEADER             font10x20
 
 // Theme Colors
@@ -208,13 +210,13 @@ Main Screen Layout
 // INFO Screen Layout Items
 #define THEME_INFO_FONT               font8x16
 #define THEME_INFO_TEXT_COLOR         DWIN_COLOR_WHITE
-#define THEME_INFO_LINE1_X            2
-#define THEME_INFO_LINE1_Y            122
-#define THEME_INFO_LINE2_X            2
-#define THEME_INFO_LINE2_Y            195
-#define THEME_INFO_LINE3_X            2
-#define THEME_INFO_LINE3_Y            268
-#define THEME_INFO_ICON_X             26
+#define THEME_INFO_ICON_X             16
+#define THEME_INFO_TOP_MARGIN         99
+#define THEME_INFO_LINE_SPACING       73
+#define THEME_INFO_MENU_LINE_START_X  16
+#define THEME_INFO_MENU_LINE_END_X    256
+#define THEME_INFO_VALUE_OFFSET_Y     20
+#define THEME_INFO_LINE_OFFSET_Y      50
 
 // Indicators Layout Items
 #define THEME_ICON_HOTEND_X           13
@@ -234,11 +236,7 @@ Main Screen Layout
 #define THEME_INDICATOR_ZOFFSET_X     178
 #define THEME_INDICATOR_ZOFFSET_Y     429
 
+// Menu related
+#define THEME_MENU_LINE_HEIGHT        53
+#define THEME_MENU_LINE_X             60
 #define THEME_MENU_LINE_BACK          0
-
-// Character Widths for Calculations
-#define MBASE(L) (49 + (L)*MLINE)
-constexpr uint16_t MLINE = 53,                          // Menu line height
-                   LBLX = 60,                           // Menu item label X
-                   MENU_CHR_W = 8,                      // Menu Char Width
-                   STAT_CHR_W = 10;      
